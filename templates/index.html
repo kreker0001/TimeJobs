@@ -1,247 +1,283 @@
 {% extends "base.html" %}
-{% block title %}Time Jobs — работа и исполнители для стройки{% endblock %}
+{% block title %}Time Jobs — биржа строителей{% endblock %}
 
 {% block content %}
 
 
 
-  <div id="app" data-v-app="">
+<div id="app" data-v-app="">
     <!---->
     <!---->
     <div data-v-477edc33="" class="landing-page router root-router">
-      <main data-v-477edc33="">
-        <div data-v-869f8f0a="" class="section-main bg-dot-pattern-2">
-          <div data-v-869f8f0a="" class="offer">
-            <div data-v-869f8f0a="" class="stats">
-              <div data-v-869f8f0a="" class="icon">
-                <svg data-v-869f8f0a="" width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4.80604 6.32446L5.75065 3.09705L8.41088 12.1861C8.65641 13.0251 9.84489 13.0251 10.0904 12.1861L11.3149 8.00236C11.3877 7.75374 11.6157 7.58288 11.8748 7.58288H13.334C13.6562 7.58288 13.9173 7.32172 13.9173 6.99955C13.9173 6.67737 13.6562 6.41622 13.334 6.41622H11.8748C11.0976 6.41622 10.4136 6.92879 10.1952 7.67464L9.25065 10.9021L6.59042 1.81293C6.34489 0.973972 5.15643 0.973984 4.91088 1.81293L3.68635 5.99674C3.61358 6.24536 3.38556 6.41622 3.1265 6.41622H1.66732C1.34515 6.41622 1.08398 6.67737 1.08398 6.99955C1.08398 7.32172 1.34515 7.58288 1.66732 7.58288H3.1265C3.90368 7.58288 4.58774 7.07031 4.80604 6.32446Z" fill="#8BC94E"></path>
-                </svg>
-              </div>
-              <p data-v-869f8f0a="" class="text-grey-400"><span data-v-869f8f0a="" class="text-14-400 text-grey-50">{{ stats.active_jobs }}&nbsp;</span><span data-v-869f8f0a="" class="text-14-400 text-grey-400 truncate">активных вакансий</span></p>
-              <p data-v-869f8f0a="" class="text-grey-400"><span data-v-869f8f0a="" class="text-14-400 text-grey-50">{{ stats.employers }}&nbsp;</span><span data-v-869f8f0a="" class="text-14-400 text-grey-400 truncate">работодателей</span></p>
-              <p data-v-869f8f0a="" class="text-grey-400"><span data-v-869f8f0a="" class="text-14-400 text-grey-50">{{ stats.workers }}&nbsp;</span><span data-v-869f8f0a="" class="text-14-400 text-grey-400 truncate">соискателей</span></p>
-            </div>
-
-            
-            <p data-v-869f8f0a="" class="offer-title">Найдите работу или исполнителя с помощью<br>
-                <span class="ra-hero-accent">TIME JOBS</span></p>
-            <p data-v-869f8f0a="" class="offer-subtitle">Краткосрочные смены, прозрачные профили, страховой депозит.</p>
-            <div data-v-869f8f0a="" class="flex gap-2.5 items-center mt-6">
-              <a data-v-869f8f0a="" href="/profile" class="">
-                <button data-v-869f8f0a="" target="_blank" class="ra-button preset primary !px-3 !py-2" style="box-shadow: rgba(76, 250, 0, 0.25) 0px 4px 40px 0px;">
-                  <div class="wrapper flex justify-center opacity-100 gap-1.5">
-                    <!---->
-                      <a href="{{ url_for('vacancies') }}">
-                          Перейти к вакансиям
-                      </a>
-                  </div>
-                  <!---->
-                </button>
-              </a>
-            </div>
-          </div>
-            <!-- блок с последними вакансиями -->
-            <div class="section-new_vacancies" data-v-869f8f0a="">
-                <div class="ra-card ra-fade-up ra-card-jobs">
-                    <div class="ra-card-header">
-                        <span>Последние вакансии</span>
-                        <a href="{{ url_for('vacancies') }}">Открыть все →</a>
+        <main data-v-477edc33="">
+            <div data-v-869f8f0a="" class="section-main bg-dot-pattern-2">
+                <div data-v-869f8f0a="" class="offer">
+                    <div data-v-869f8f0a="" class="stats">
+                        <div data-v-869f8f0a="" class="icon">
+                            <svg data-v-869f8f0a="" width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.80604 6.32446L5.75065 3.09705L8.41088 12.1861C8.65641 13.0251 9.84489 13.0251 10.0904 12.1861L11.3149 8.00236C11.3877 7.75374 11.6157 7.58288 11.8748 7.58288H13.334C13.6562 7.58288 13.9173 7.32172 13.9173 6.99955C13.9173 6.67737 13.6562 6.41622 13.334 6.41622H11.8748C11.0976 6.41622 10.4136 6.92879 10.1952 7.67464L9.25065 10.9021L6.59042 1.81293C6.34489 0.973972 5.15643 0.973984 4.91088 1.81293L3.68635 5.99674C3.61358 6.24536 3.38556 6.41622 3.1265 6.41622H1.66732C1.34515 6.41622 1.08398 6.67737 1.08398 6.99955C1.08398 7.32172 1.34515 7.58288 1.66732 7.58288H3.1265C3.90368 7.58288 4.58774 7.07031 4.80604 6.32446Z" fill="#8BC94E"></path>
+                            </svg>
+                        </div>
+                        <p data-v-869f8f0a="" class="text-grey-400"><span data-v-869f8f0a="" class="text-14-400 text-grey-50">{{ stats.active_jobs }}&nbsp;</span><span data-v-869f8f0a="" class="text-14-400 text-grey-400 truncate">активных вакансий</span></p>
+                        <p data-v-869f8f0a="" class="text-grey-400"><span data-v-869f8f0a="" class="text-14-400 text-grey-50">{{ stats.employers }}&nbsp;</span><span data-v-869f8f0a="" class="text-14-400 text-grey-400 truncate">работодателей</span></p>
+                        <p data-v-869f8f0a="" class="text-grey-400"><span data-v-869f8f0a="" class="text-14-400 text-grey-50">{{ stats.workers }}&nbsp;</span><span data-v-869f8f0a="" class="text-14-400 text-grey-400 truncate">соискателей</span></p>
                     </div>
 
-                    {% if last_jobs %}
-                    <div class="ra-jobs-grid">
-                        {% for job in last_jobs %}
-                        {% set base = job.city or job.title %}
-                        {% set initials = (base[:2] if base else 'TJ')|upper %}
-                        <a href="{{ url_for('vacancy_detail', job_id=job.id) }}"
-                           class="ra-job-card">
-                            <div class="ra-job-head">
-                                <div class="ra-job-avatar">{{ initials }}</div>
-                                <div>
-                                    <div class="ra-job-title">{{ job.title }}</div>
-                                    <div class="ra-job-meta">
-                                        {{ job.specialization or 'Специализация не указана' }}
+
+                    <p data-v-869f8f0a="" class="offer-title">
+                        Найдите работу или исполнителя с помощью<br>
+                        <span class="ra-hero-accent">TIME JOBS</span>
+                    </p>
+                    <p data-v-869f8f0a="" class="offer-subtitle">Краткосрочные смены, прозрачные профили, страховой депозит.</p>
+                    <div data-v-869f8f0a="" class="flex gap-2.5 items-center mt-6">
+                        <a data-v-869f8f0a="" href="/profile" class="">
+                            <button data-v-869f8f0a="" target="_blank" class="ra-button preset primary !px-3 !py-2" style="box-shadow: rgba(76, 250, 0, 0.25) 0px 4px 40px 0px;">
+                                <div class="wrapper flex justify-center opacity-100 gap-1.5">
+                                    <!---->
+                                    <a href="{{ url_for('vacancies') }}">
+                                        Перейти к вакансиям
+                                    </a>
+                                </div>
+                                <!---->
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                <!-- блок с последними вакансиями -->
+                <div class="section-new_vacancies" data-v-869f8f0a="">
+                    <div class="ra-card ra-fade-up ra-card-jobs">
+                        <div class="ra-card-header">
+                            <span>Последние вакансии</span>
+                            <a href="{{ url_for('vacancies') }}">Открыть все →</a>
+                        </div>
+
+                        {% if last_jobs %}
+                        <div class="ra-jobs-grid">
+                            {% for job in last_jobs %}
+                            {% set base = job.city or job.title %}
+                            {% set initials = (base[:2] if base else 'TJ')|upper %}
+                            <a href="{{ url_for('vacancy_detail', job_id=job.id) }}"
+                               class="ra-job-card">
+                                <div class="ra-job-head">
+                                    <div class="ra-job-avatar">{{ initials }}</div>
+                                    <div>
+                                        <div class="ra-job-title">{{ job.title }}</div>
+                                        <div class="ra-job-meta">
+                                            {{ job.specialization or 'Специализация не указана' }}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="ra-job-footer">
-                        <span class="ra-job-city">
-                            {{ job.city or 'Город не указан' }}
-                        </span>
-                                <span class="ra-job-wage">
-                            {{ '%.0f'|format(job.wage or 0) }} ₽
-                        </span>
-                                <span class="ra-job-date">
-                            {{ job.created_at.strftime('%d.%m.%Y') }}
-                        </span>
-                            </div>
-                        </a>
-                        {% endfor %}
+                                <div class="ra-job-footer">
+                                    <span class="ra-job-city">
+                                        {{ job.city or 'Город не указан' }}
+                                    </span>
+                                    <span class="ra-job-wage">
+                                        {{ '%.0f'|format(job.wage or 0) }} ₽
+                                    </span>
+                                    <span class="ra-job-date">
+                                        {{ job.created_at.strftime('%d.%m.%Y') }}
+                                    </span>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div style="padding:12px 16px;font-size:13px;color:#e5e7eb;">
+                            Пока нет опубликованных вакансий.
+                        </div>
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <div style="padding:12px 16px;font-size:13px;color:#e5e7eb;">
-                        Пока нет опубликованных вакансий.
+                </div>
+
+            </div>
+
+            <div data-v-869f8f0a="" class="middle">
+                <div data-v-869f8f0a="" class="section-projects">
+                    <span data-v-869f8f0a="" class="text-grey-400 text-center">НАМ ДОВЕРЯЮТ БОЛЕЕ&nbsp;<a class="text-grey-50">100</a> КОМПАНИЙ, ВКЛЮЧАЯ</span>
+                    <div data-v-869f8f0a="" class="scroll-container">
+                        <div data-v-869f8f0a="" class="scroll-content">
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111111/4CFA00/png?text=SG">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">СитиСтрой Групп</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">citystroy.pro</p>
+                                </div>
+                            </div>
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/FACC15/png?text=BE">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">БетонЭксперт</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">monolith &amp; бетон</p>
+                                </div>
+                            </div>
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/020617/38BDF8/png?text=NH">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">NordHaus</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">загородные дома</p>
+                                </div>
+                            </div>
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/F97316/png?text=MP">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">Монолит Проект</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">генподряд</p>
+                                </div>
+                            </div>
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/020617/22C55E/png?text=VE">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">Вектор Инжиниринг</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">инфраструктурные объекты</p>
+                                </div>
+                            </div>
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/E5E7EB/png?text=SM">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">СтройМост</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">мосты и эстакады</p>
+                                </div>
+                            </div>
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/020617/4ADE80/png?text=ST">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">SkyTower Development</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">многоэтажные ЖК</p>
+                                </div>
+                            </div>
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/F97316/png?text=DV">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">Дом на Века</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">частное домостроение</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
+                    <div data-v-869f8f0a="" class="comments">
+                        <div data-v-869f8f0a="" class="comment">
+                            <img data-v-869f8f0a="" src="https://placehold.co/80x80/111111/4CFA00/png?text=SG" class="blur-avatar">
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center mb-2.5">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111111/4CFA00/png?text=SG">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">Иван Сафронов</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">директор, «СитиСтрой Групп»</p>
+                                </div>
+                            </div><span data-v-869f8f0a="" class="comment-text">
+                                Через Time Jobs мы впервые собрали бригаду на отделку трёх домов одновременно.
+                                Понравилось, что видно рейтинги и депозит исполнителей — рисков на объекте стало заметно меньше.
+                            </span>
+                        </div>
+                        <div data-v-869f8f0a="" class="comment">
+                            <img data-v-869f8f0a="" src="https://placehold.co/80x80/111827/FACC15/png?text=BE" class="blur-avatar">
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center mb-2.5">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/FACC15/png?text=BE">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">Мария Лебедева</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">HR-менеджер, «БетонЭксперт»</p>
+                                </div>
+                            </div><span data-v-869f8f0a="" class="comment-text">
+                                Раньше поиски арматурщиков занимали недели. Сейчас закрываем смены за сутки,
+                                а вся коммуникация с рабочими идёт через личный кабинет — удобно и прозрачно.
+                            </span>
+                        </div>
+                        <!---->
+                        <div data-v-869f8f0a="" class="comment">
+                            <img data-v-869f8f0a="" src="https://placehold.co/80x80/020617/38BDF8/png?text=NH" class="blur-avatar">
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center mb-2.5">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/020617/38BDF8/png?text=NH">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">Кирилл Шульц</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">руководитель проектов, NordHaus</p>
+                                </div>
+                            </div><span data-v-869f8f0a="" class="comment-text">
+                                Нам важно качество и соблюдение сроков на коттеджах бизнес-класса.
+                                В Time Jobs мы видим историю откликов и одобряем только проверенных мастеров —
+                                это сильно экономит нервы заказчику и нам.
+                            </span>
+                        </div>
+                        <div data-v-869f8f0a="" class="comment">
+                            <img data-v-869f8f0a="" src="https://placehold.co/80x80/111827/F97316/png?text=MP" class="blur-avatar">
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center mb-2.5">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/F97316/png?text=MP">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">Алексей Громов</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">главный инженер, «Монолит Проект»</p>
+                                </div>
+                            </div><span data-v-869f8f0a="" class="comment-text">
+                                При запуске нового ЖК у нас всегда дефицит бетонщиков и опалубщиков.
+                                Благодаря Time Jobs мы закрываем пиковые нагрузки без постоянного расширения штата.
+                            </span>
+                        </div>
+                        <div data-v-869f8f0a="" class="comment">
+                            <img data-v-869f8f0a="" src="https://placehold.co/80x80/020617/22C55E/png?text=VE" class="blur-avatar">
+                            <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center mb-2.5">
+                                <div data-v-f101b359="" class="image">
+                                    <div data-v-f101b359="" class="img-box">
+                                        <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/020617/22C55E/png?text=VE">
+                                    </div>
+                                </div>
+                                <div data-v-f101b359="" class="lines">
+                                    <p data-v-f101b359="" class="title no-wrap-line">Елена Ветрова</p>
+                                    <p data-v-f101b359="" class="message no-wrap-line">операционный директор, «Вектор Инжиниринг»</p>
+                                </div>
+                            </div><span data-v-869f8f0a="" class="comment-text">
+                                Для инфраструктурных объектов критична безопасность.
+                                Система депозитов и модерация профилей в Time Jobs помогают быстро отсеивать случайных людей.
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-        </div>
-          
-        <div data-v-869f8f0a="" class="middle">
-          <div data-v-869f8f0a="" class="section-projects"><span data-v-869f8f0a="" class="text-grey-400 text-center">НАМ ДОВЕРЯЮТ БОЛЕЕ&nbsp;<a class="text-grey-50">100</a> КОМПАНИЙ, ВКЛЮЧАЯ</span>
-            <div data-v-869f8f0a="" class="scroll-container">
-              <div data-v-869f8f0a="" class="scroll-content">
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111111/4CFA00/png?text=SG"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">СитиСтрой Групп</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">citystroy.pro</p>
-                  </div>
-                </div>
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/FACC15/png?text=BE"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">БетонЭксперт</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">monolith &amp; бетон</p>
-                  </div>
-                </div>
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/020617/38BDF8/png?text=NH"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">NordHaus</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">загородные дома</p>
-                  </div>
-                </div>
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/F97316/png?text=MP"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">Монолит Проект</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">генподряд</p>
-                  </div>
-                </div>
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/020617/22C55E/png?text=VE"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">Вектор Инжиниринг</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">инфраструктурные объекты</p>
-                  </div>
-                </div>
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/E5E7EB/png?text=SM"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">СтройМост</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">мосты и эстакады</p>
-                  </div>
-                </div>
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/020617/4ADE80/png?text=ST"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">SkyTower Development</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">многоэтажные ЖК</p>
-                  </div>
-                </div>
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center project">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/F97316/png?text=DV"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">Дом на Века</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">частное домостроение</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div data-v-869f8f0a="" class="comments">
-              <div data-v-869f8f0a="" class="comment"><img data-v-869f8f0a="" src="https://placehold.co/80x80/111111/4CFA00/png?text=SG" class="blur-avatar">
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center mb-2.5">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111111/4CFA00/png?text=SG"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">Иван Сафронов</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">директор, «СитиСтрой Групп»</p>
-                  </div>
-                </div><span data-v-869f8f0a="" class="comment-text">Через Time Jobs мы впервые собрали бригаду на отделку трёх домов одновременно. 
-        Понравилось, что видно рейтинги и депозит исполнителей — рисков на объекте стало заметно меньше.</span></div>
-              <div data-v-869f8f0a="" class="comment"><img data-v-869f8f0a="" src="https://placehold.co/80x80/111827/FACC15/png?text=BE" class="blur-avatar">
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center mb-2.5">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/FACC15/png?text=BE"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">Мария Лебедева</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">HR-менеджер, «БетонЭксперт»</p>
-                  </div>
-                </div><span data-v-869f8f0a="" class="comment-text">Раньше поиски арматурщиков занимали недели. Сейчас закрываем смены за сутки, 
-        а вся коммуникация с рабочими идёт через личный кабинет — удобно и прозрачно.</span></div>
-              <!---->
-              <div data-v-869f8f0a="" class="comment"><img data-v-869f8f0a="" src="https://placehold.co/80x80/020617/38BDF8/png?text=NH" class="blur-avatar">
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center mb-2.5">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/020617/38BDF8/png?text=NH"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">Кирилл Шульц</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">руководитель проектов, NordHaus</p>
-                  </div>
-                </div><span data-v-869f8f0a="" class="comment-text">Нам важно качество и соблюдение сроков на коттеджах бизнес-класса. 
-        В Time Jobs мы видим историю откликов и одобряем только проверенных мастеров — 
-        это сильно экономит нервы заказчику и нам.</span></div>
-              <div data-v-869f8f0a="" class="comment"><img data-v-869f8f0a="" src="https://placehold.co/80x80/111827/F97316/png?text=MP" class="blur-avatar">
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center mb-2.5">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/111827/F97316/png?text=MP"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">Алексей Громов</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">главный инженер, «Монолит Проект»</p>
-                  </div>
-                </div><span data-v-869f8f0a="" class="comment-text">При запуске нового ЖК у нас всегда дефицит бетонщиков и опалубщиков. 
-        Благодаря Time Jobs мы закрываем пиковые нагрузки без постоянного расширения штата.</span></div>
-              <div data-v-869f8f0a="" class="comment"><img data-v-869f8f0a="" src="https://placehold.co/80x80/020617/22C55E/png?text=VE" class="blur-avatar">
-                <div data-v-f101b359="" data-v-869f8f0a="" class="image-lines-container default items-center mb-2.5">
-                  <div data-v-f101b359="" class="image">
-                    <div data-v-f101b359="" class="img-box">
-                      <!----><img data-v-f101b359="" class="w-full h-full" src="https://placehold.co/80x80/020617/22C55E/png?text=VE"></div>
-                  </div>
-                  <div data-v-f101b359="" class="lines">
-                    <p data-v-f101b359="" class="title no-wrap-line">Елена Ветрова</p>
-                    <p data-v-f101b359="" class="message no-wrap-line">операционный директор, «Вектор Инжиниринг»</p>
-                  </div>
-                </div><span data-v-869f8f0a="" class="comment-text">Для инфраструктурных объектов критична безопасность. 
-        Система депозитов и модерация профилей в Time Jobs помогают быстро отсеивать случайных людей.</span></div>
-            </div>
-          </div>
-        </div>
-          
 
 
           <footer data-v-477edc33="" class="">
@@ -271,16 +307,12 @@
       </main>
     </div>
     <div data-v-bacf8c7c="" class="relative">
-      <!---->
+        <!---->
     </div>
     <div data-v-eda83e49="" class="fixed runtime-notification-wrapper pointer-events-none"></div>
-  </div>
+</div>
 
-  <script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;c4c1e78f201d4ff587fe8ba1dd8d468a&quot;,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
+<script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;c4c1e78f201d4ff587fe8ba1dd8d468a&quot;,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
 
-  <!---->
-
-
-
-
+<!---->
 {% endblock %}

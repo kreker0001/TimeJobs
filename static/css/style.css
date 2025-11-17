@@ -1,0 +1,22 @@
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+body {
+    background-color: #111827;
+}
+
+.glass-card {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dotted-bg {
+    background-color: #0f0f0f;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 24px 24px;
+}

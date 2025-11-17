@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Вакансия — {{ job.title }}{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto px-6 py-10">
+    <div class="glass-card rounded-xl p-6">
+        <h1 class="text-3xl font-bold text-white mb-2">{{ job.title }}</h1>
+        <p class="text-sm text-gray-400">
+            {{ job.city or 'Город не указан' }} •
+            {{ job.specialization or 'Специализация не указана' }} •
+            {% if job.pay_type == 'hourly' %}почасовая{% else %}за смену{% endif %} •
+            срок {{ job.duration_days or 1 }} дн.
+        </p>
+        <p class="text-lg text-green-400 font-semibold mt-4">
+            {{ '%.0f'|format(job.wage or 0) }} ₽
+        </p>
+        <p class="text-sm text-gray-400 mt-1">
+            Работодатель: <span class="text-white">{{ job.employer.name }}</span>
+        </p>
+
+        <hr class="my-6 border-gray-700"/>
+
+        <h2 class="text-xl font-semibold text-white mb-2">Описание</h2>
+        <p class="text-gray-300 text-sm whitespace-pre-line">
+            {{ job.description or 'Описание не указано' }}
+        </p>
+
+        <div class="mt-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p class="text-sm text-gray-500">
+                Опубликовано: {{ job.created_at.strftime('%d.%m.%Y') }}
+            </p>
+
+            {% if current_user.is_authenticated and current_user.role == 'worker' %}
+            <form method="post" action="{{ url_for('apply', job_id=job.id) }}" class="flex gap-2 items-center">
+                <input type="text" name="note" placeholder="Короткое сообщение работодателю"
+                       class="px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm w-52 md:w-64">
+                <button class="px-5 py-2 rounded-lg bg-green-500 text-black font-semibold hover:bg-green-400 text-sm">
+                    Откликнуться
+                </button>
+            </form>
+            {% elif not current_user.is_authenticated %}
+            <a href="{{ url_for('login') }}"
+               class="px-5 py-2 rounded-lg bg-green-500 text-black font-semibold hover:bg-green-400 text-sm inline-flex">
+                Войти, чтобы откликнуться
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

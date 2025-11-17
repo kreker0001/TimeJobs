@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Все вакансии — Time Jobs{% endblock %}
+
+{% block content %}
+<section class="max-w-6xl mx-auto px-6 py-10">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-white">Все вакансии</h1>
+            <p class="text-sm text-gray-400 mt-1">
+                Найдите подходящую смену или исполнителя.
+            </p>
+        </div>
+
+        <form method="get" action="{{ url_for('vacancies') }}" class="flex gap-3 w-full md:w-auto">
+            <input type="text" name="search"
+                   value="{{ request.args.get('search', '') if request else '' }}"
+                   placeholder="Поиск по названию, городу, навыкам..."
+                   class="flex-1 md:w-64 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-sm
+                    placeholder-gray-500 focus:outline-none focus:border-green-500">
+            <button type="submit"
+                    class="px-4 py-2 rounded-lg bg-green-500 text-black text-sm font-semibold hover:bg-green-400">
+                Найти
+            </button>
+        </form>
+    </div>
+
+    {% if jobs %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for job in jobs %}
+        <a href="{{ url_for('vacancy_detail', job_id=job.id) }}"
+           class="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-green-500 transition-colors block glass-card">
+            <div class="flex items-start justify-between gap-3 mb-2">
+                <h2 class="text-lg font-semibold text-white">
+                    {{ job.title }}
+                </h2>
+                {% if job.status %}
+                <span class="text-xs px-2 py-1 rounded-full
+                           {% if job.status == 'approved' %}
+                             bg-green-500/20 text-green-300 border border-green-500/40
+                           {% elif job.status == 'pending' %}
+                             bg-yellow-500/20 text-yellow-300 border border-yellow-500/40
+                           {% else %}
+                             bg-gray-600/40 text-gray-200 border border-gray-500/40
+                           {% endif %}">
+                {{ job.status }}
+              </span>
+                {% endif %}
+            </div>
+
+            <p class="text-sm text-gray-400">
+                {{ job.city or 'Город не указан' }}
+                {% if job.specialization %}
+                • {{ job.specialization }}
+                {% endif %}
+            </p>
+
+            <p class="text-sm text-gray-300 mt-3">
+                {{ job.description[:160] }}{% if job.description and job.description|length > 160 %}…{% endif %}
+            </p>
+
+            <div class="mt-4 flex items-center justify-between text-sm">
+                <div class="text-green-400 font-semibold">
+                    {{ '%.0f'|format(job.wage or 0) }} ₽
+                    <span class="text-xs text-gray-400 ml-1">
+                {% if job.pay_type == 'hourly' %}/ час{% else %}/ смена{% endif %}
+              </span>
+                </div>
+                <span class="text-xs px-3 py-1.5 rounded bg-gray-700 text-gray-100">
+              Подробнее
+            </span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 text-sm text-gray-300 glass-card">
+        Пока нет вакансий. Попробуйте позже или создайте первую вакансию, если вы работодатель.
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

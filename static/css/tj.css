@@ -423,6 +423,10 @@ img, video {
     margin-top: 1.5rem
 }
 
+.mb-2\.5 {
+    margin-bottom: .625rem;
+}
+
 .\!inline {
     display: inline !important
 }
@@ -12938,7 +12942,7 @@ input[type=number][data-v-2b8d8499] {
     justify-content: space-between;
     padding: 16px 16px 14px;
     border-radius: 18px;
-    background: radial-gradient(circle at top left, rgba(76,250,0,.08), transparent 55%), #050505;
+    background: hsl(var(--twc-grey-950) / var(--twc-grey-950-opacity, var(--tw-bg-opacity)));
     border: 1px solid rgba(55,65,81,.8);
     text-decoration: none;
     transition: transform .18s ease-out, box-shadow .18s ease-out, border-color .18s ease-out, background .18s ease-out;
@@ -12947,7 +12951,6 @@ input[type=number][data-v-2b8d8499] {
     .ra-job-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 20px 55px rgba(0,0,0,.9);
-        border-color: rgba(76,250,0,.7);
     }
 /* шапка карточки */
 

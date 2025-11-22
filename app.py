@@ -30,6 +30,7 @@ class User(db.Model, UserMixin):
     education = db.Column(db.String(255))
     exp_years = db.Column(db.Integer, default=0)
     avatar_url = db.Column(db.String(255))
+    rating = db.Column(db.Float, default=0)
 
 
 class Job(db.Model):
@@ -238,7 +239,26 @@ def create_vacancy():
 
     return render_template('vacancies/create.html')
 
+@app.route('/post-job', methods=['GET', 'POST'])
+@login_required
+def post_job():
+    # используем ту же логику, что и в create_vacancy
+    return create_vacancy()
+    
 
+    
+@app.route('/support')
+@login_required
+def support():
+    # доступ только модератору
+    if current_user.role != 'moderator':
+        flash('Страница доступна только модераторам', 'error')
+        return redirect(url_for('index'))
+
+    # пока заглушка — просто рендер страницы поддержки
+    # позже сюда можно добавить список споров/депозитов и т.п.
+    return render_template('support/index.html')
+    
 @app.route('/manage')
 @login_required
 def manage():
@@ -296,10 +316,46 @@ def profile():
         current_user.phone = request.form.get('phone') or None
         current_user.education = request.form.get('education') or None
         current_user.exp_years = int(request.form.get('exp_years') or 0)
+
+        # страховой взнос только для соискателя
+        if current_user.role == 'worker':
+            dep_raw = request.form.get('deposit')
+            try:
+                current_user.deposit = float(dep_raw or 0)
+            except (TypeError, ValueError):
+                current_user.deposit = 0
+
         db.session.commit()
         flash('Профиль обновлён', 'success')
         return redirect(url_for('profile'))
-    return render_template('profile/index.html')
+
+    # --- Статистика профиля ---
+    rating = getattr(current_user, 'rating', 0) or 0
+
+    if current_user.role == 'employer':
+        jobs_count = Job.query.filter_by(employer_id=current_user.id).count()
+        responses_count = (
+            Application.query
+            .join(Job, Application.job_id == Job.id)
+            .filter(Job.employer_id == current_user.id)
+            .count()
+        )
+    elif current_user.role == 'worker':
+        jobs_count = 0
+        responses_count = Application.query.filter_by(worker_id=current_user.id).count()
+    else:
+        jobs_count = Job.query.filter_by(employer_id=current_user.id).count()
+        responses_count = Application.query.filter_by(worker_id=current_user.id).count()
+
+    class Stats:
+        def __init__(self, rating, jobs, responses):
+            self.rating = rating
+            self.jobs = jobs
+            self.responses = responses
+
+    profile_stats = Stats(rating, jobs_count, responses_count)
+
+    return render_template('profile/index.html', profile_stats=profile_stats)
 
 
 @app.route('/my-applications')

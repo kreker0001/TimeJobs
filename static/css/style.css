@@ -1,22 +1,504 @@
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+/* ===== Страница регистрации Time Jobs ===== */
+
+.auth-page {
+    min-height: calc(100vh - 80px); /* примерно высота хедера */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px 48px;
 }
 
-body {
-    background-color: #111827;
+@media (min-width: 768px) {
+    .auth-page {
+        padding: 48px 24px 64px;
+    }:root {
+  --tj-accent: #4CFA00;
 }
 
-.glass-card {
-    background: rgba(20, 20, 20, 0.6);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+/* Общий фон, чтобы совпадал с главной */
+html[data-theme="dark"] body {
+  --tw-bg-opacity: 1;
+  background-color: hsl(var(--twc-grey-1000) / var(--tw-bg-opacity));
+  color: hsl(var(--twc-grey-50) / 1);
 }
 
-.dotted-bg {
-    background-color: #0f0f0f;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 24px 24px;
+/* Страница регистрации */
+.tj-auth {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  background-image: url("/static/img/noise.png");
+  background-position: 0 0;
+  background-size: 1440px;
+  margin-top: 20px;
+}
+
+/* Карточка */
+.tj-auth__card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 24px;
+  padding: 24px 24px 28px;
+  background: hsl(var(--twc-grey-950) / var(--twc-grey-950-opacity, var(--tw-bg-opacity)));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Автарка TJ */
+.tj-auth__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  background: var(--tj-accent);
+  color: #000;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Заголовок и подзаголовок */
+.tj-auth__title {
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+.tj-auth__subtitle {
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  margin-bottom: 20px;
+  color: hsl(var(--twc-grey-400) / 1);
+}
+
+/* Форма и поля */
+.tj-auth__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tj-auth__input {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid hsl(var(--twc-grey-700) / 1);
+  background-color: hsl(var(--twc-grey-900) / 1);
+  color: #fff;
+  font-size: 14px;
+}
+
+.tj-auth__input::placeholder {
+  color: hsl(var(--twc-grey-400) / 1);
+}
+
+/* Кнопки ролей */
+.tj-auth__roles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  font-size: 14px;
+}
+
+.tj-auth__role-btn {
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid hsl(var(--twc-grey-700) / 1);
+  background-color: hsl(var(--twc-grey-900) / 1);
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color .15s ease,
+    background-color .15s ease,
+    box-shadow .15s ease;
+}
+
+.tj-auth__role-btn--active {
+  border-color: var(--tj-accent);
+  background: hsl(var(--twc-grey-900) / 1);
+  box-shadow:
+    0 0 0 1px rgba(76, 250, 0, 0.2),
+    0 16px 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Кнопка отправки */
+.tj-auth__submit {
+  margin-top: 4px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #4CFA00 0%, #6BFF3C 100%);
+  color: #000;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 3px 20px rgba(76, 250, 0, 0.45);
+}
+
+/* Низ формы */
+.tj-auth__footer {
+  margin-top: 16px;
+  font-size: 13px;
+  text-align: center;
+  color: hsl(var(--twc-grey-400) / 1);
+}
+
+.tj-auth__footer a {
+  color: var(--tj-accent);
+  text-decoration: none;
+}
+
+.tj-auth__footer a:hover {
+  text-decoration: underline;
+}
+
+
+
+
+/* ===== Профиль Time Jobs ===== */
+
+.profile-page {
+    min-height: calc(100vh - 80px);
+    padding: 40px 16px 56px;
+    display: flex;
+    justify-content: center;
+}
+
+.profile-inner {
+    width: 100%;
+    max-width: 1120px;
+}
+
+/* === HERO === */
+
+.profile-hero {
+    margin-bottom: 20px;
+    margin-top: 20px;
+    border-radius: 18px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (min-width: 768px) {
+    .profile-hero {
+        padding: 20px 22px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.profile-hero-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.profile-avatar-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 999px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.profile-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.profile-role {
+    margin-top: 3px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    color: hsl(var(--twc-grey-400) / 1);
+}
+
+.profile-hero-right {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+@media (max-width: 767px) {
+    .profile-hero-right {
+        grid-auto-flow: row;
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+    }
+}
+
+/* поля статистики выглядят как обычные поля формы */
+.profile-stat-field {
+    min-width: 120px;
+}
+
+/* === Нижняя сетка === */
+
+.profile-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.9fr) minmax(0, 1.1fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+@media (max-width: 900px) {
+    .profile-body {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Карточки */
+
+.profile-card {
+    padding: 20px 20px 22px;
+    color: hsl(var(--twc-grey-50) / 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-card--main {
+    padding: 22px 22px 24px;
+}
+
+/* правая колонка БЕЗ своих градиентов/тени — как обычная форма */
+.profile-card--side {
+    padding: 20px 20px 22px;
+}
+
+.profile-card__title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: #ffffff;
+}
+
+/* Форма */
+
+.profile-form {
+    margin-top: 4px;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-form-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+}
+
+@media (min-width: 640px) {
+    .profile-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .profile-field--wide {
+        grid-column: 1 / -1;
+    }
+}
+
+.profile-field {
+    font-size: 13px;
+}
+
+.profile-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: hsl(var(--twc-grey-400) / 1);
+}
+
+/* Инпуты */
+
+.profile-input {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid hsl(var(--twc-grey-700) / 1);
+    background-color: hsl(var(--twc-grey-900) / 1);
+    color: #ffffff;
+    font-size: 13px;
+    padding: 8px 11px;
+    outline: none;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.profile-input::placeholder {
+    color: hsl(var(--twc-grey-500) / 1);
+}
+
+.profile-input:focus {
+    border-color: var(--tj-accent);
+    box-shadow: 0 0 0 1px rgba(76, 250, 0, 0.28);
+    background-color: hsl(var(--twc-grey-950) / 1);
+}
+
+.profile-input--textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.profile-input--readonly {
+    cursor: default;
+}
+
+/* Страховой взнос */
+
+.profile-deposit {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background-color: hsl(var(--twc-grey-950) / 1);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    display: grid;
+    gap: 8px;
+}
+
+.profile-deposit-text {
+    font-size: 12px;
+    color: hsl(var(--twc-grey-200) / 1);
+}
+
+.profile-deposit-field {
+    max-width: 220px;
+}
+
+/* Кнопка сохранить — прижата вниз */
+
+.profile-actions {
+    margin-top: 10px;
+    display: flex;
+	justify-content: flex-end;
+}
+
+.profile-save-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: linear-gradient(90deg, #4CFA00 0%, #6BFF3C 100%);
+    color: #020617;
+    box-shadow: 0 3px 18px rgba(76, 250, 0, 0.35);
+}
+
+/* Правая колонка */
+
+.profile-side-section {
+    margin-bottom: 14px;
+}
+
+.profile-side-subtitle {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: hsl(var(--twc-grey-200) / 1);
+}
+
+.profile-note {
+    margin-top: 8px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: hsl(var(--twc-grey-400) / 1);
+}
+
+.profile-note code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 11px;
+    background-color: rgba(15, 23, 42, 0.85);
+    padding: 1px 4px;
+    border-radius: 4px;
+}
+
+.profile-text {
+    font-size: 13px;
+    color: hsl(var(--twc-grey-200) / 1);
+}
+
+/* Кнопка выйти — прижата вниз и на одной высоте с "Сохранить" */
+
+.profile-side-actions {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.profile-logout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    background: #ef4444;
+    color: #ffffff;
+}
+
+/* ==== ДОКРУТКА ПРОФИЛЯ: линии и позиционирование ===== */
+
+/* горизонтальная линия под блоком "о себе" */
+.profile-body {
+    border-top: 1px solid rgba(148, 163, 184, 0.55); /* серая полоса */
+    margin-top: 16px;
+    padding-top: 16px;
+}
+
+/* вертикальная линия между левой и правой колонкой – через border-left у правой */
+@media (min-width: 900px) {
+    .profile-card--side {
+        border-left: 1px solid rgba(148, 163, 184, 0.55);
+        padding-left: 20px;   /* чтобы текст не прилипал к линии */
+        margin-left: 20px;
+    }
+
+    .profile-body {
+        column-gap: 32px;      /* чуть больше зазор между колонками */
+    }
+}
+
+/* сдвигаем блок "Рейтинг / Вакансий / Откликов" ближе к аватару */
+@media (min-width: 768px) {
+    .profile-hero {
+        justify-content: flex-start;
+        gap: 24px;                 /* расстояние между левой и правой частью */
+    }
+
+    .profile-hero-right {
+        margin-left: 24px;         /* подвигаем блок статистики к имени */
+        justify-content: flex-start;
+    }
+}
+
+.profile-card--side {
+    padding: 20px 20px 22px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* общий блок "Сессия + текст + кнопка", прижат вниз */
+.profile-side-session {
+    margin-top: auto;              /* уезжает в самый низ карточки */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }

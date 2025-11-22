@@ -2,84 +2,96 @@
 {% block title %}Разместить вакансию — Time Jobs{% endblock %}
 
 {% block content %}
-<section class="max-w-3xl mx-auto px-6 py-10">
-    <h1 class="text-3xl font-bold text-white mb-6">Разместить вакансию</h1>
+<div class="profile-page">
+    <div class="profile-inner">
 
-    {% if not current_user.is_authenticated or current_user.role != 'employer' %}
-    <div class="bg-red-500/10 border border-red-500/40 text-red-300 px-4 py-3 rounded-lg">
-        Эта страница доступна только работодателям.
+        <div class="profile-hero">
+            <div class="profile-hero-left">
+                <div>
+                    <h1 class="text-18-600" style="font-size: 24px;">Разместить вакансию</h1>
+                    <p class="profile-text" style="font-size: 13px; color: hsl(var(--twc-grey-400));">
+                        Создайте новую смену. Заполните основные данные и опубликуйте.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {% if not current_user.is_authenticated or current_user.role != 'employer' %}
+        <div class="glass-card"
+             style="padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); color: #ffbaba; background: rgba(255,0,0,0.08);">
+            Эта страница доступна только работодателям.
+        </div>
+
+        {% else %}
+
+        <form method="post" class="glass-card"
+              style="padding: 26px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 18px;">
+
+            <!-- Название -->
+            <div>
+                <label class="profile-label">Название вакансии</label>
+                <input type="text" name="title" required
+                       class="profile-input"
+                       placeholder="Например, Разнорабочий на стройку">
+            </div>
+
+            <!-- Город / Специализация / Срок -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                <div>
+                    <label class="profile-label">Город</label>
+                    <input type="text" name="city" class="profile-input" placeholder="Москва">
+                </div>
+
+                <div>
+                    <label class="profile-label">Специализация</label>
+                    <input type="text" name="specialization" class="profile-input"
+                           placeholder="Разнорабочий, Каменщик...">
+                </div>
+
+                <div>
+                    <label class="profile-label">Срок (дней)</label>
+                    <input type="number" min="1" name="duration_days" value="1" class="profile-input">
+                </div>
+            </div>
+
+            <!-- Зарплата + тип оплаты -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                    <label class="profile-label">Ставка, ₽</label>
+                    <input type="number" min="0" name="wage" required class="profile-input" placeholder="3000">
+                </div>
+
+                <div>
+                    <label class="profile-label">Тип оплаты</label>
+                    <select name="pay_type" class="profile-input" style="cursor: pointer;">
+                        <option value="hourly">Почасовая</option>
+                        <option value="shift">За смену</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Описание -->
+            <div>
+                <label class="profile-label">Описание</label>
+                <textarea name="description" rows="6"
+                          class="profile-input"
+                          placeholder="Опишите задачи, требования, условия..."></textarea>
+            </div>
+
+            <!-- Кнопки -->
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                <a href="{{ url_for('vacancies') }}" class="ra-button preset default" style="padding: 8px 18px;">
+                    Отмена
+                </a>
+
+                <button type="submit" class="ra-button preset primary" style="padding: 8px 22px;">
+                    Опубликовать
+                </button>
+            </div>
+
+        </form>
+        {% endif %}
+
     </div>
-    {% else %}
-    <form method="post" class="bg-gray-800 border border-gray-700 rounded-xl p-6 space-y-4 glass-card">
-        <div>
-            <label class="block text-sm text-gray-300 mb-1">Название вакансии</label>
-            <input type="text" name="title" required
-                   class="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm
-                      focus:outline-none focus:border-green-500"
-                   placeholder="Например, Разнорабочий на стройку">
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div>
-                <label class="block text-sm text-gray-300 mb-1">Город</label>
-                <input type="text" name="city"
-                       class="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm
-                        focus:outline-none focus:border-green-500"
-                       placeholder="Москва">
-            </div>
-            <div>
-                <label class="block text-sm text-gray-300 mb-1">Специализация</label>
-                <input type="text" name="specialization"
-                       class="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm
-                        focus:outline-none focus:border-green-500"
-                       placeholder="Разнорабочий, Каменщик...">
-            </div>
-            <div>
-                <label class="block text-sm text-gray-300 mb-1">Срок (дней)</label>
-                <input type="number" min="1" name="duration_days" value="1"
-                       class="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm
-                        focus:outline-none focus:border-green-500">
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-                <label class="block text-sm text-gray-300 mb-1">Ставка, ₽</label>
-                <input type="number" min="0" name="wage" required
-                       class="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm
-                        focus:outline-none focus:border-green-500"
-                       placeholder="3000">
-            </div>
-            <div>
-                <label class="block text-sm text-gray-300 mb-1">Тип оплаты</label>
-                <select name="pay_type"
-                        class="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm
-                         focus:outline-none focus:border-green-500">
-                    <option value="hourly">Почасовая</option>
-                    <option value="shift">За смену</option>
-                </select>
-            </div>
-        </div>
-
-        <div>
-            <label class="block text-sm text-gray-300 mb-1">Описание</label>
-            <textarea name="description" rows="6"
-                      class="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm
-                         focus:outline-none focus:border-green-500"
-                      placeholder="Опишите задачи, требования, условия..."></textarea>
-        </div>
-
-        <div class="flex justify-end gap-3 pt-2">
-            <a href="{{ url_for('vacancies') }}"
-               class="px-4 py-2 text-sm rounded-lg border border-gray-600 text-gray-300 hover:bg-gray-700">
-                Отмена
-            </a>
-            <button type="submit"
-                    class="px-5 py-2 text-sm rounded-lg bg-green-500 text-black font-semibold hover:bg-green-400">
-                Опубликовать
-            </button>
-        </div>
-    </form>
-    {% endif %}
-</section>
+</div>
 {% endblock %}

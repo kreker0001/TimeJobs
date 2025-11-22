@@ -2,58 +2,70 @@
 {% block title %}Регистрация — Time Jobs{% endblock %}
 
 {% block content %}
-<section class="min-h-[calc(100vh-80px)] flex items-center justify-center px-4">
-    <div class="glass-card w-full max-w-md p-6 rounded-2xl">
-        <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
-             style="background:var(--tj)">
-            <span class="text-black font-bold">tj</span>
-        </div>
-        <h1 class="text-2xl font-bold text-center mb-4">Регистрация</h1>
-        <form method="post" class="flex flex-col gap-3">
-            <input name="name" placeholder="Имя"
-                   class="px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm">
-            <input name="email" type="email" placeholder="Почта"
-                   class="px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm">
+<section class="tj-auth">
+    <div class="tj-auth__card">
+        <div class="tj-auth__avatar">TJ</div>
+
+        <h1 class="tj-auth__title">Регистрация</h1>
+        <p class="tj-auth__subtitle">
+            Создайте аккаунт, чтобы откликаться на смены или публиковать вакансии.
+        </p>
+
+        <form method="post" class="tj-auth__form">
+            <input name="name" placeholder="Имя" class="tj-auth__input">
+            <input name="email" type="email" placeholder="Почта" class="tj-auth__input">
 
             <input type="hidden" name="role" id="role-input" value="worker">
 
-            <div class="grid grid-cols-2 gap-2 text-sm">
+            <div class="tj-auth__roles">
                 <button type="button" data-role="worker"
-                        class="px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-center">
+                        class="tj-auth__role-btn tj-auth__role-btn--active">
                     Соискатель
                 </button>
                 <button type="button" data-role="employer"
-                        class="px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-center">
+                        class="tj-auth__role-btn">
                     Компания
                 </button>
             </div>
 
             <input name="password" type="password" placeholder="Пароль"
-                   class="px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-sm">
+                   class="tj-auth__input">
 
-            <button class="bg-[var(--tj)] text-black font-semibold py-2 rounded-lg">
+            <button type="submit" class="tj-auth__submit">
                 Создать аккаунт
             </button>
         </form>
-        <p class="text-center text-sm text-gray-400 mt-4">
+
+        <p class="tj-auth__footer">
             Уже есть аккаунт?
-            <a href="{{ url_for('login') }}" class="text-[var(--tj)] hover:underline">Войти</a>
+            <a href="{{ url_for('login') }}">Войти</a>
         </p>
     </div>
 </section>
 {% endblock %}
 
-{% block body_extra %}
+{% block scripts %}
 <script>
-    const buttons = document.querySelectorAll('[data-role]');
-    const roleInput = document.getElementById('role-input');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const r = btn.getAttribute('data-role');
-            roleInput.value = r;
-            window.tjToast('Роль: ' + (r === 'worker' ? 'Соискатель' : 'Компания'), 'success');
-            buttons.forEach(b => b.classList.remove('border-green-500'));
-            btn.classList.add('border-green-500');
+    const tjRoleButtons = document.querySelectorAll('[data-role]');
+    const tjRoleInput = document.getElementById('role-input');
+
+    tjRoleButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const role = btn.getAttribute('data-role');
+            tjRoleInput.value = role;
+
+            tjRoleButtons.forEach(function (b) {
+                b.classList.remove('tj-auth__role-btn--active');
+            });
+            btn.classList.add('tj-auth__role-btn--active');
+
+            // красивый тост, если на главной уже подключен window.tjToast
+            if (window.tjToast) {
+                window.tjToast(
+                    'Роль: ' + (role === 'worker' ? 'Соискатель' : 'Компания'),
+                    'success'
+                );
+            }
         });
     });
 </script>

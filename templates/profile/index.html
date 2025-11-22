@@ -2,25 +2,22 @@
 {% block title %}Профиль — Time Jobs{% endblock %}
 
 {% block content %}
-<section class="max-w-5xl mx-auto px-6 py-10">
-    <h1 class="text-3xl font-bold text-white mb-6">Профиль</h1>
+<section class="bg-dot-pattern-2 profile-page">
+    <div class="profile-inner">
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- О себе -->
-        <div class="lg:col-span-2 glass-card rounded-xl p-6 space-y-4">
-            <h2 class="text-xl font-semibold text-white mb-3">О себе</h2>
-
-            <div class="flex items-center gap-4 mb-4">
+        {# ===== HERO: О себе + статистика ===== #}
+        <div class="glass-card profile-hero">
+            <div class="profile-hero-left">
                 <img
-                        src="{{ current_user.avatar_url or default_avatar(current_user.name) }}"
-                        class="w-16 h-16 rounded-full ring-1 ring-white/10 object-cover"
-                        alt="Аватар"
+                    src="{{ current_user.avatar_url or current_user.avatar or default_avatar(current_user.name) }}"
+                    alt="Аватар"
+                    class="profile-avatar-img"
                 >
                 <div>
-                    <div class="text-lg font-semibold text-white">
+                    <div class="profile-name">
                         {{ current_user.name }}
                     </div>
-                    <div class="text-xs text-gray-400 uppercase tracking-wide mt-1">
+                    <div class="profile-role">
                         {% if current_user.role == 'worker' %}
                         Соискатель
                         {% elif current_user.role == 'employer' %}
@@ -34,57 +31,131 @@
                 </div>
             </div>
 
-            <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                    <label class="text-gray-400 text-xs mb-1 block">Телефон</label>
-                    <input name="phone" value="{{ current_user.phone or '' }}"
-                           class="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-green-500">
-                </div>
-                <div>
-                    <label class="text-gray-400 text-xs mb-1 block">Опыт (лет)</label>
-                    <input name="exp_years" type="number" min="0" value="{{ current_user.exp_years or 0 }}"
-                           class="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-green-500">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="text-gray-400 text-xs mb-1 block">Образование / о себе</label>
-                    <textarea name="education" rows="4"
-                              class="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 focus:outline-none focus:border-green-500"
-                              placeholder="Кратко расскажите о себе">{{ current_user.education or '' }}</textarea>
-                </div>
-                <div class="md:col-span-2 flex justify-end">
-                    <button class="px-5 py-2 rounded-lg bg-[var(--tj)] text-black font-semibold text-sm">
-                        Сохранить
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Безопасность / Сессия -->
-        <div class="space-y-4">
-            <div class="glass-card rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-3">Безопасность</h2>
-                <div class="text-sm mb-3">
-                    <div class="text-gray-400 text-xs mb-1">Почта</div>
-                    <div class="px-3 py-2 rounded-lg bg-gray-900 border border-gray-700">
-                        {{ current_user.email }}
+            <div class="profile-hero-right">
+                <div class="profile-stat-field">
+                    <div class="profile-label">Рейтинг</div>
+                    <div class="profile-input profile-input--readonly">
+                        {% if profile_stats and profile_stats.rating is not none %}
+                            {{ '%.1f'|format(profile_stats.rating) }}
+                        {% else %}
+                            —
+                        {% endif %}
                     </div>
                 </div>
-                <p class="text-xs text-gray-500">
-                    Смену пароля можно реализовать отдельной формой (текущий пароль + новый пароль)
-                    и обработчиком в /change_password.
-                </p>
+                <div class="profile-stat-field">
+                    <div class="profile-label">
+                        {% if current_user.role == 'employer' %}
+                            Вакансий
+                        {% else %}
+                            Откликов
+                        {% endif %}
+                    </div>
+                    <div class="profile-input profile-input--readonly">
+                        {{ profile_stats.jobs if profile_stats else 0 }}
+                    </div>
+                </div>
+                <div class="profile-stat-field">
+                    <div class="profile-label">
+                        {% if current_user.role == 'employer' %}
+                            Откликов на вакансии
+                        {% else %}
+                            Всего действий
+                        {% endif %}
+                    </div>
+                    <div class="profile-input profile-input--readonly">
+                        {{ profile_stats.responses if profile_stats else 0 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# ===== НИЖНЯЯ СЕТКА: левая / правая колонка ===== #}
+        <div class="profile-body">
+            {# Левая колонка — форма профиля #}
+            <div class="glass-card profile-card profile-card--main">
+                <h2 class="profile-card__title">Профиль</h2>
+
+                <form method="post" class="profile-form">
+                    <div class="profile-form-grid">
+                        <div class="profile-field">
+                            <label class="profile-label">Телефон</label>
+                            <input name="phone"
+                                   value="{{ current_user.phone or '' }}"
+                                   class="profile-input">
+                        </div>
+
+                        <div class="profile-field">
+                            <label class="profile-label">Опыт (лет)</label>
+                            <input name="exp_years"
+                                   type="number"
+                                   min="0"
+                                   value="{{ current_user.exp_years or 0 }}"
+                                   class="profile-input">
+                        </div><div class="profile-field profile-field--wide">
+                            <label class="profile-label">Образование / о себе</label>
+                            <textarea name="education"
+                                      rows="4"
+                                      class="profile-input profile-input--textarea"
+                                      placeholder="Кратко расскажите о себе">{{ current_user.education or '' }}</textarea>
+                        </div>
+                    </div>
+
+                    {# Страховой взнос — только для соискателя #}
+                    {% if current_user.role == 'worker' %}
+                    <div class="profile-deposit">
+                        <div class="profile-deposit-text">
+                            Страховой взнос повышает доверие работодателей и может быть
+                            использован в спорных ситуациях.
+                        </div>
+                        <div class="profile-deposit-field">
+                            <label class="profile-label">Страховой взнос, ₽</label>
+                            <input name="deposit"
+                                   type="number"
+                                   min="0"
+                                   step="100"
+                                   value="{{ current_user.deposit or '' }}"
+                                   class="profile-input">
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="profile-actions">
+                        <button class="profile-save-btn">
+                            Сохранить
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <div class="glass-card rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-3">Сессия</h2>
-                <p class="text-sm text-gray-300 mb-4">
-                    Выйдите из аккаунта на этом устройстве.
-                </p>
-                <a href="{{ url_for('logout') }}"
-                   class="inline-flex items-center px-4 py-2 rounded-lg bg-red-500 text-sm font-semibold text-white hover:bg-red-400">
-                    Выйти
-                </a>
-            </div>
+            {# Правая колонка — без градиентов, как форма #}
+            <div class="glass-card profile-card profile-card--side">
+				<h2 class="profile-card__title">Аккаунт</h2>
+
+				<div class="profile-side-section">
+					<h3 class="profile-side-subtitle">Безопасность</h3>
+					<div class="profile-field">
+						<label class="profile-label">Почта</label>
+						<div class="profile-input profile-input--readonly">
+							{{ current_user.email }}
+						</div>
+					</div>
+					<p class="profile-note">
+						Смену пароля можно сделать отдельной формой и обработчиком,
+						например, на <code>/change_password</code>.
+					</p>
+				</div>
+
+				{# один общий блок, который уедет вниз #}
+				<div class="profile-side-session">
+					<h3 class="profile-side-subtitle">Сессия</h3>
+					<p class="profile-text">
+						Выйдите из аккаунта на этом устройстве.
+					</p>
+					<a href="{{ url_for('logout') }}" class="profile-logout-btn">
+						Выйти
+					</a>
+				</div>
+			</div>
         </div>
     </div>
 </section>

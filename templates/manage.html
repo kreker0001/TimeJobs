@@ -98,14 +98,22 @@
 
                         {% elif current_user.role == 'employer' %}
 
-                        <form method="post" action="{{ url_for('change_job_status', job_id=job.id, action='close') }}">
-                            <button class="ra-button preset default"
-                                    style="padding: 6px 14px; font-size: 12px; background: rgba(255,0,0,0.2); color: #ff9c9c;">
-                                Закрыть вакансию
-                            </button>
-                        </form>
+							<form method="post" action="{{ url_for('change_job_status', job_id=job.id, action='close') }}">
+								<button class="ra-button preset default"
+										style="padding: 6px 14px; font-size: 12px; background: rgba(255,0,0,0.2); color: #ff9c9c;">
+									Закрыть вакансию
+								</button>
+							</form>
 
-                        {% endif %}
+							<!-- Новая кнопка -->
+							<a href="{{ url_for('view_job_applications', job_id=job.id) }}"
+							   class="ra-button preset default"
+							   style="padding: 6px 14px; font-size: 12px;">
+								Отклики
+							</a>
+
+						{% endif %}
+
                     </div>
 
                 </div>

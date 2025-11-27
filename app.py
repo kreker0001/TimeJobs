@@ -192,7 +192,7 @@ def apply(job_id):
     job = Job.query.get_or_404(job_id)
 
     # проверка: профиль должен быть заполнен (хотя бы телефон)
-    if not current_user.phone:
+    if not current_user.phone or str(current_user.phone).strip() == "":
         flash('Заполните профиль (укажите телефон), прежде чем откликаться', 'error')
         return redirect(url_for('profile'))
 
@@ -273,6 +273,12 @@ def manage():
         # модератор видит все pending
         jobs = Job.query.filter_by(status='pending') \
                         .order_by(Job.created_at.desc()).all()
+
+    # Добавляем top_apps (топ-3) для работодателя
+    for job in jobs:
+        # сортируем отклики по рейтингу рабочего (если нет рейтинга — 0)
+        sorted_apps = sorted(job.applications, key=lambda a: (a.worker.rating or 0), reverse=True)
+        job.top_apps = sorted_apps[:3]
 
     return render_template('manage.html', jobs=jobs)
 
@@ -370,6 +376,25 @@ def my_applications():
     return render_template('my_applications.html', applications=apps)
 
 
+@app.route('/job/<int:job_id>/applications')
+@login_required
+def view_job_applications(job_id):
+    if not current_user.is_authenticated or current_user.role != 'employer':
+        flash('Доступ только для работодателей', 'error')
+        return redirect(url_for('index'))
+
+    job = Job.query.filter_by(id=job_id, employer_id=current_user.id).first()
+
+    if not job:
+        flash('Вакансия не найдена', 'error')
+        return redirect(url_for('manage'))
+
+    apps = Application.query.filter_by(job_id=job.id) \
+                            .order_by(Application.created_at.desc()).all()
+
+    return render_template('applications_for_job.html', job=job, apps=apps)
+
+
 def init_db():
     db.create_all()
     # создаём модератора по умолчанию
@@ -382,7 +407,6 @@ def init_db():
         )
         db.session.add(admin)
         db.session.commit()
-
 
 if __name__ == '__main__':
     with app.app_context():

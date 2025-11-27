@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Отклики — {{ job.title }}{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <div class="profile-inner">
+
+        <h1 class="text-18-600" style="font-size: 24px; margin-bottom: 20px;">
+            Отклики на вакансию "{{ job.title }}"
+        </h1>
+
+        {% if apps %}
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                {% for a in apps %}
+                <div class="glass-card" style="padding:20px; border-radius:18px;">
+                    <div class="text-18-600" style="font-size:16px;">
+                        {{ a.name }}
+                    </div>
+                    <div class="profile-text" style="color:hsl(var(--twc-grey-400)); font-size:13px;">
+                        Телефон: {{ a.phone or "нет" }}<br>
+                        Email: {{ a.email }}
+                    </div>
+
+                    {% if a.note %}
+                    <div style="margin-top:8px; font-size:13px; color:hsl(var(--twc-grey-200));">
+                        Сообщение: "{{ a.note }}"
+                    </div>
+                    {% endif %}
+
+                    <div style="font-size:12px; margin-top:10px; color:hsl(var(--twc-grey-500));">
+                        Отправлено: {{ a.created_at }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div class="glass-card" style="padding:20px; border-radius:18px;">
+                Пока никто не откликнулся.
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

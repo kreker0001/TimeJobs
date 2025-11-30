@@ -53,8 +53,8 @@
                     <h2 class="text-18-600" style="font-size: 17px; font-weight: 600;">{{ job.title }}</h2>
 
                     {% if job.status %}
-                        <span class="tag"
-                              style="
+                    <span class="tag"
+                          style="
                                 font-size: 11px;
                                 padding: 4px 8px;
                                 border-radius: 8px;
@@ -73,8 +73,13 @@
                                   border-color: rgba(148,163,184,0.35);
                                 {% endif %}
                               ">
-                            {{ job.status }}
-                        </span>
+                        {% if job.status == 'approved' %}
+                        Активная
+                        {% endif %}
+                        {% if job.status == 'pending' %}
+                        На модерации
+                        {% endif %}
+                    </span>
                     {% endif %}
                 </div>
 

@@ -11,6 +11,20 @@
             Создайте аккаунт, чтобы откликаться на смены или публиковать вакансии.
         </p>
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="tj-auth__alerts">
+            {% for category, message in messages %}
+            {% if category == 'error' %}
+            <div class="tj-auth__alert tj-auth__alert--error">
+                {{ message }}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
         <form method="post" class="tj-auth__form">
             <input name="name" placeholder="Имя" class="tj-auth__input">
             <input name="email" type="email" placeholder="Почта" class="tj-auth__input">

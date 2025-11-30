@@ -73,7 +73,12 @@
                                     color: #A8B3CF;
                                 {% endif %}
                             ">
-                                {{ job.status }}
+                                {% if job.status == 'approved' %}
+                                Активная
+                                {% endif %}
+                                {% if job.status == 'pending' %}
+                                На модерации
+                                {% endif %}
                             </span>
                         </div>
                     </div>

@@ -73,10 +73,37 @@ def load_user(user_id):
 @app.context_processor
 def inject_globals():
     import urllib.parse
+    from flask import request, url_for
+
     def default_avatar(name):
         n = urllib.parse.quote_plus(name or "U")
         return f"https://ui-avatars.com/api/?background=4CFA00&color=fff&name={n}"
-    return dict(current_user=current_user, default_avatar=default_avatar)
+
+    # определяем, какой пункт меню активен
+    def get_active_page():
+        path = request.path
+
+        if path == url_for('index'):
+            return 'index'
+        # /vacancies и /vacancies/123
+        if path.startswith(url_for('vacancies')):
+            return 'vacancies'
+        if path.startswith(url_for('my_applications')):
+            return 'my_applications'
+        if path.startswith(url_for('manage')):
+            return 'manage'
+        if path.startswith(url_for('post_job')) or path.startswith('/vacancies/create'):
+            return 'post_job'
+        if path.startswith(url_for('support')):
+            return 'support'
+        return ''
+
+    return dict(
+        current_user=current_user,
+        default_avatar=default_avatar,
+        active_page=get_active_page()
+    )
+
 
 
 @app.route('/')
@@ -393,6 +420,7 @@ def view_job_applications(job_id):
                             .order_by(Application.created_at.desc()).all()
 
     return render_template('applications_for_job.html', job=job, apps=apps)
+
 
 
 def init_db():

@@ -21,99 +21,97 @@
 
 <body version="8c0ff04">
 
-<header data-v-477edc33="" class="header">
-    <a data-v-477edc33="" aria-current="page" href="/" class="router-link-active router-link-exact-active logo">
-        <img data-v-477edc33="" class="w-[26px] fill-white mt-0.5" src="/static/img/icons-job-48.png" />
-
-        <p data-v-477edc33="" class="text-white text-18-600">TimeJobs</p>
-    </a>
-    <div data-v-477edc33="" class="buttons">
-        <a data-v-477edc33="" href="{{ url_for('index') }}" class="">
-            <button data-v-477edc33="" target="_blank" class="ra-button preset landing-tab">
-                <div class="wrapper flex justify-center opacity-100 gap-1.5">Главная
-                    <!---->
-                </div>
-                <!---->
-            </button>
+    <header data-v-477edc33="" class="header">
+        <a data-v-477edc33="" aria-current="page" href="/" class="router-link-active router-link-exact-active logo">
+            <img data-v-477edc33="" class="w-[26px] fill-white mt-0.5" src="/static/img/icons-job-48.png" />
+            <p data-v-477edc33="" class="text-white text-18-600">TimeJobs</p>
         </a>
-        <a data-v-477edc33="" href="{{ url_for('vacancies') }}" class="ra-button preset landing-tab">
-            <div class="wrapper flex justify-center opacity-100 gap-1.5">Вакансии
-                <!---->
-            </div>
-            <!---->
-        </a>
-        {% if current_user and current_user.role == 'worker' %}
-        <a data-v-477edc33="" href="{{ url_for('my_applications') }}" class="">
-            <button data-v-477edc33="" target="_blank" class="ra-button preset landing-tab">
-                <div class="wrapper flex justify-center opacity-100 gap-1.5">Мои отклики
-                    <!---->
-                </div>
-                <!---->
-            </button>
-        </a>
-        {% endif %}
-
-        {% if current_user and current_user.role == 'employer' %}
-        <a data-v-477edc33="" href="{{ url_for('manage') }}" class="">
-            <button data-v-477edc33="" target="_blank" class="ra-button preset landing-tab">
-                <div class="wrapper flex justify-center opacity-100 gap-1.5">Отклики
-                    <!---->
-                </div>
-                <!---->
-            </button>
-        </a>
-        <a data-v-477edc33="" href="{{ url_for('post_job') }}" class="">
-            <button data-v-477edc33="" target="_blank" class="ra-button preset landing-tab">
-                <div class="wrapper flex justify-center opacity-100 gap-1.5">Разместить вакансию
-                    <!---->
-                </div>
-                <!---->
-            </button>
-        </a>
-        {% endif %}
-
-        {% if current_user and current_user.role == 'moderator' %}
-        <a data-v-477edc33="" href="{{ url_for('support') }}" class="">
-            <button data-v-477edc33="" target="_blank" class="ra-button preset landing-tab">
-                <div class="wrapper flex justify-center opacity-100 gap-1.5">Поддержка
-                    <!---->
-                </div>
-                <!---->
-            </button>
-        </a>
-        <a data-v-477edc33="" href="{{ url_for('manage') }}" class="">
-            <button data-v-477edc33="" target="_blank" class="ra-button preset landing-tab">
-                <div class="wrapper flex justify-center opacity-100 gap-1.5">Модерация
-                    <!---->
-                </div>
-                <!---->
-            </button>
-        </a>
-        {% endif %}
-
-        <div class="flex items-center gap-2">
-            {% if current_user %}
-            <a href="{{ url_for('profile') }}" title="Профиль">
-                <img src="{{ current_user.avatar_url or current_user.avatar or default_avatar(current_user.name) }}"
-                     class="w-9 h-9 rounded-full ring-1 ring-white/10 object-cover" />
+        <div data-v-477edc33="" class="buttons">
+            <!-- Главная -->
+            <a data-v-477edc33="" href="{{ url_for('index') }}" class="">
+                <button data-v-477edc33=""
+                        class="ra-button preset landing-tab{% if active_page == 'index' %} landing-tab--active{% endif %}">
+                    <div class="wrapper flex justify-center opacity-100 gap-1.5">Главная</div>
+                </button>
             </a>
-            {% else %}
-            <div class="ra-button preset white !text-14-500">Войти
-                <!---->
-            </div>
-            <div class="ra-button preset white !text-14-500">Регистрация
-                <!---->
-            </div>
+
+            <!-- Вакансии -->
+            <a data-v-477edc33="" href="{{ url_for('vacancies') }}" class="">
+                <button data-v-477edc33=""
+                        class="ra-button preset landing-tab{% if active_page == 'vacancies' %} landing-tab--active{% endif %}">
+                    <div class="wrapper flex justify-center opacity-100 gap-1.5">Вакансии</div>
+                </button>
+            </a>
+
+            {% if current_user and current_user.role == 'worker' %}
+            <!-- Мои отклики -->
+            <a data-v-477edc33="" href="{{ url_for('my_applications') }}" class="">
+                <button data-v-477edc33=""
+                        class="ra-button preset landing-tab{% if active_page == 'my_applications' %} landing-tab--active{% endif %}">
+                    <div class="wrapper flex justify-center opacity-100 gap-1.5">Мои отклики</div>
+                </button>
+            </a>
             {% endif %}
+
+            {% if current_user and current_user.role == 'employer' %}
+            <!-- Отклики -->
+            <a data-v-477edc33="" href="{{ url_for('manage') }}" class="">
+                <button data-v-477edc33=""
+                        class="ra-button preset landing-tab{% if active_page == 'manage' %} landing-tab--active{% endif %}">
+                    <div class="wrapper flex justify-center opacity-100 gap-1.5">Отклики</div>
+                </button>
+            </a>
+
+            <!-- Разместить вакансию -->
+            <a data-v-477edc33="" href="{{ url_for('post_job') }}" class="">
+                <button data-v-477edc33=""
+                        class="ra-button preset landing-tab{% if active_page == 'post_job' %} landing-tab--active{% endif %}">
+                    <div class="wrapper flex justify-center opacity-100 gap-1.5">Разместить вакансию</div>
+                </button>
+            </a>
+            {% endif %}
+
+            {% if current_user and current_user.role == 'moderator' %}
+            <!-- Поддержка -->
+            <a data-v-477edc33="" href="{{ url_for('support') }}" class="">
+                <button data-v-477edc33=""
+                        class="ra-button preset landing-tab{% if active_page == 'support' %} landing-tab--active{% endif %}">
+                    <div class="wrapper flex justify-center opacity-100 gap-1.5">Поддержка</div>
+                </button>
+            </a>
+
+            <!-- Модерация (manage) -->
+            <a data-v-477edc33="" href="{{ url_for('manage') }}" class="">
+                <button data-v-477edc33=""
+                        class="ra-button preset landing-tab{% if active_page == 'manage' %} landing-tab--active{% endif %}">
+                    <div class="wrapper flex justify-center opacity-100 gap-1.5">Модерация</div>
+                </button>
+            </a>
+            {% endif %}
+
+            <div class="flex items-center gap-2">
+                {% if current_user %}
+                <a href="{{ url_for('profile') }}" title="Профиль">
+                    <img src="{{ current_user.avatar_url or current_user.avatar or default_avatar(current_user.name) }}"
+                         class="w-9 h-9 rounded-full ring-1 ring-white/10 object-cover" />
+                </a>
+                {% else %}
+                <div class="ra-button preset white !text-14-500">Войти</div>
+                <div class="ra-button preset white !text-14-500">Регистрация</div>
+                {% endif %}
+            </div>
         </div>
-    </div>
-</header>
-
-{% block content %}{% endblock %}
+    </header>
 
 
 
-{% block scripts %}{% endblock %}
+
+
+    {% block content %}{% endblock %}
+
+
+
+    {% block scripts %}{% endblock %}
 
 
 </body>

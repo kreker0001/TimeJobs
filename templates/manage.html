@@ -23,33 +23,21 @@
             </div>
         </div>
 
-        {% if status_tabs %}
-        <div class="employer-tabs glass-card">
-            {% for tab in status_tabs %}
-            <a href="{{ url_for('manage', tab=tab.key, search=search) }}"
-               class="employer-tab{% if active_tab == tab.key %} is-active{% endif %}">
-                <span>{{ tab.label }}</span>
-                <span class="employer-tab__counter">{{ tab.count }}</span>
-            </a>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <div class="employer-summary">
-            <div class="employer-callout glass-card">
-                <div class="callout-dot"></div>
-                <div>
-                    <p class="text-18-600" style="font-size: 15px;">Отвечайте на отклики в течение 24 часов</p>
-                    <p class="profile-text" style="color: hsl(var(--twc-grey-400));">
-                        Быстрая обратная связь помогает держать вакансию выше в поиске.
-                    </p>
+        <div class="resume-grid" style="margin: 14px 0 0 0;">
+            <div class="resume-card glass-card resume-card--deposit">
+                <div class="resume-card__title">Доступный баланс</div>
+                <div class="deposit-metric">
+                    <div class="deposit-amount">{{ current_user.deposit or 0 }} ₽</div>
+                    <div class="deposit-note">Баланс нужен для оплаты за работу соискателя.</div>
                 </div>
-            </div>
-            <div class="employer-metric glass-card">
-                <div class="metric-value">100%</div>
-                <div class="metric-label">Индекс внимательности</div>
+                <form method="post" action="{{ url_for('worker_deposit') }}" class="deposit-form">
+                    <input type="number" name="deposit_amount" min="100" step="100" placeholder="Пополнить от 100 ₽" class="deposit-input">
+                    <button type="submit" class="resume-btn resume-btn--primary">Пополнить</button>
+                </form>
             </div>
         </div>
+
+
 
         <form method="get" action="{{ url_for('manage') }}" class="employer-toolbar glass-card">
             <input type="hidden" name="tab" value="{{ active_tab }}">
@@ -64,6 +52,18 @@
                 <a href="{{ url_for('post_job') }}" class="ra-button preset primary">Новая вакансия</a>
             </div>
         </form>
+
+        {% if status_tabs %}
+        <div class="employer-tabs glass-card">
+            {% for tab in status_tabs %}
+            <a href="{{ url_for('manage', tab=tab.key, search=search) }}"
+               class="employer-tab{% if active_tab == tab.key %} is-active{% endif %}">
+                <span>{{ tab.label }}</span>
+                <span class="employer-tab__counter">{{ tab.count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         {% set tab_jobs = status_groups.get(active_tab, []) if status_groups and active_tab else jobs %}
         <div class="employer-table glass-card">

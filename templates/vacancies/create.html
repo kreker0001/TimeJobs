@@ -1,97 +1,339 @@
 {% extends "base.html" %}
-{% block title %}Разместить вакансию — Time Jobs{% endblock %}
+{% block title %}Новая вакансия — Time Jobs{% endblock %}
 
 {% block content %}
-<div class="profile-page">
-    <div class="profile-inner">
-
-        <div class="profile-hero">
-            <div class="profile-hero-left">
-                <div>
-                    <h1 class="text-18-600" style="font-size: 24px;">Разместить вакансию</h1>
-                    <p class="profile-text" style="font-size: 13px; color: hsl(var(--twc-grey-400));">
-                        Создайте новую смену. Заполните основные данные и опубликуйте.
-                    </p>
-                </div>
-            </div>
-        </div>
+<div class="create-page">
+    <div class="create-inner">
 
         {% if not current_user.is_authenticated or current_user.role != 'employer' %}
-        <div class="glass-card"
-             style="padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); color: #ffbaba; background: rgba(255,0,0,0.08);">
-            Эта страница доступна только работодателям.
+        <div class="create-card">
+            <p class="text-18-600" style="color: #ffbaba; margin-bottom: 6px;">Только для работодателей</p>
+            <p class="profile-text">Чтобы публиковать вакансии, войдите как работодатель.</p>
         </div>
-
         {% else %}
 
-        <form method="post" class="glass-card"
-              style="padding: 26px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 18px;">
-
-            <!-- Название -->
+        <div class="create-hero create-card">
             <div>
-                <label class="profile-label">Название вакансии</label>
-                <input type="text" name="title" required
-                       class="profile-input"
-                       placeholder="Например, Разнорабочий на стройку">
+                <p class="eyebrow">Новая вакансия</p>
+                <h1 class="text-18-600" style="font-size: 26px;">Заполните вручную или выберите быстрый способ</h1>
+                <p class="profile-text" style="color: hsl(var(--twc-grey-400));">
+                    Мы сохранили Ваши черновики — выберите удобный вариант.
+                </p>
             </div>
+            <div class="create-quick">
+                <a href="{{ url_for('manage') }}?tab=draft&search=" class="create-chip">📝 Черновики</a>
 
-            <!-- Город / Специализация / Срок -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
-                <div>
-                    <label class="profile-label">Город</label>
-                    <input type="text" name="city" class="profile-input" placeholder="Москва">
-                </div>
-
-                <div>
-                    <label class="profile-label">Специализация</label>
-                    <input type="text" name="specialization" class="profile-input"
-                           placeholder="Разнорабочий, Каменщик...">
-                </div>
-
-                <div>
-                    <label class="profile-label">Срок (дней)</label>
-                    <input type="number" min="1" name="duration_days" value="1" class="profile-input">
-                </div>
             </div>
+        </div>
 
-            <!-- Зарплата + тип оплаты -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                <div>
-                    <label class="profile-label">Ставка, ₽</label>
-                    <input type="number" min="0" name="wage" required class="profile-input" placeholder="3000">
-                </div>
+        <form method="post" class="create-layout">
 
-                <div>
-                    <label class="profile-label">Тип оплаты</label>
-                    <select name="pay_type" class="profile-input" style="cursor: pointer;">
-                        <option value="hourly">Почасовая</option>
-                        <option value="shift">За смену</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Описание -->
-            <div>
-                <label class="profile-label">Описание</label>
-                <textarea name="description" rows="6"
-                          class="profile-input"
-                          placeholder="Опишите задачи, требования, условия..."></textarea>
-            </div>
-
-            <!-- Кнопки -->
-            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-                <a href="{{ url_for('vacancies') }}" class="ra-button preset default" style="padding: 8px 18px;">
-                    Отмена
+            <div class="create-nav create-card">
+                {% set steps = [
+                    ('title', 'Название и опыт'),
+                    ('conditions', 'Условия'),
+                    ('schedule', 'График'),
+                    ('address', 'Адрес компании'),
+                    ('payment', 'Оплата работы'),
+                    ('description', 'Описание'),
+                    ('replies', 'Отклики'),
+                    ('contacts', 'Способы связи'),
+                    ('publish', 'Публикация'),
+                ] %}
+                {% for key, label in steps %}
+                <a href="#{{ key }}" class="create-nav__item">
+                    <span class="dot"></span>
+                    <span>{{ label }}</span>
                 </a>
-
-                <button type="submit" class="ra-button preset primary" style="padding: 8px 22px;">
-                    Опубликовать
-                </button>
+                {% endfor %}
             </div>
 
-        </form>
-        {% endif %}
+            <div class="create-flow">
 
+                <section id="title" class="create-card">
+                    <div class="create-card__header">
+                        <h2 class="text-18-600">Основная информация</h2>
+                        <span class="create-tag">Шаг 1</span>
+                    </div>
+                    <div class="create-grid two">
+                        <div class="field">
+                            <label class="profile-label">Название</label>
+                            <input type="text" name="title" required class="profile-input" placeholder="Например, Водитель-курьер">
+                        </div>
+                        <div class="field">
+                            <label class="profile-label">Специализация сотрудника</label>
+                            <input type="text" name="specialization" class="profile-input" placeholder="Водитель, продавец, бариста...">
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="experience_level" data-group="experience_level" value="no_exp">
+                    <div class="field">
+                        <label class="profile-label">Опыт работы</label>
+                        <div class="pill-row">
+                            <button type="button" class="pill is-active" data-group="experience_level" data-value="no_exp">Нет опыта</button>
+                            <button type="button" class="pill" data-group="experience_level" data-value="1_3">От 1 года до 3 лет</button>
+                            <button type="button" class="pill" data-group="experience_level" data-value="3_6">От 3 до 6 лет</button>
+                            <button type="button" class="pill" data-group="experience_level" data-value="6_plus">Более 6 лет</button>
+                        </div>
+                        <p class="profile-text" style="color: hsl(var(--twc-grey-500)); margin-top: 6px;">
+                            Если нужен опыт от нескольких месяцев до года, выберите «Нет опыта».
+                        </p>
+                    </div>
+                </section>
+
+                <section id="conditions" class="create-card">
+                    <div class="create-card__header">
+                        <h2 class="text-18-600">Условия</h2>
+                        <span class="create-tag">Шаг 2</span>
+                    </div>
+
+                    <input type="hidden" name="employment_type" data-group="employment_type" value="full">
+                    <div class="pill-grid">
+                        <div class="pill-column">
+                            <p class="pill-title">Тип занятости</p>
+                            <div class="pill-row wrap">
+                                <button type="button" class="pill is-active" data-group="employment_type" data-value="full">Полная</button>
+                                <button type="button" class="pill" data-group="employment_type" data-value="part">Частичная</button>
+                                <button type="button" class="pill" data-group="employment_type" data-value="project">Проект / разовое</button>
+                                <button type="button" class="pill" data-group="employment_type" data-value="shift">Вахта</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <div>
+                            <p class="text-18-600" style="font-size: 14px;">Подработка</p>
+                            <p class="profile-text" style="color: hsl(var(--twc-grey-500));">Готовы рассмотреть временных сотрудников</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span></span>
+                        </label>
+                    </div>
+                </section>
+
+                <section id="schedule" class="create-card">
+                    <div class="create-card__header">
+                        <h2 class="text-18-600">График</h2>
+                        <span class="create-tag">Шаг 3</span>
+                    </div>
+                    <div class="create-grid two">
+                        <div class="field">
+                            <label class="profile-label">Длительность смены, дней</label>
+                            <input type="number" min="1" name="duration_days" value="1" class="profile-input">
+                        </div>
+                        <div class="field">
+                            <label class="profile-label">График</label>
+                            <input type="text" class="profile-input" placeholder="5/2, 2/2, гибкий...">
+                        </div>
+                    </div>
+                </section>
+
+                <section id="address" class="create-card">
+                    <div class="create-card__header">
+                        <h2 class="text-18-600">Адрес компании</h2>
+                        <span class="create-tag">Шаг 4</span>
+                    </div>
+                    <div class="field">
+                        <label class="profile-label">Где предстоит работать</label>
+                        <input type="text" name="city" class="profile-input" placeholder="Москва, Санкт-Петербург...">
+                    </div>
+                    <div class="create-map-placeholder">
+                        <p class="profile-text" style="color: hsl(var(--twc-grey-300));">Введите адрес, метро или название компании</p>
+                    </div>
+                    <label class="toggle-row">
+                        <span>Не показывать адрес в вакансии</span>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span></span>
+                        </label>
+                    </label>
+                </section>
+
+                <section id="payment" class="create-card">
+                    <div class="create-card__header">
+                        <h2 class="text-18-600">Оплата работы</h2>
+                        <span class="create-tag">Шаг 5</span>
+                    </div>
+                    <div class="create-grid two">
+                        <div class="field">
+                            <label class="profile-label">Ставка, ₽</label>
+                            <input type="number" min="0" name="wage" required class="profile-input" placeholder="3000">
+                        </div>
+                        <div class="field">
+                            <label class="profile-label">Формат оплаты</label>
+                            <select name="pay_type" class="profile-input" style="cursor: pointer;">
+                                <option value="hourly">Почасовая</option>
+                                <option value="shift">За смену</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="description" class="create-card">
+                    <div class="create-card__header">
+                        <h2 class="text-18-600">Описание вакансии</h2>
+                        <span class="create-tag">Шаг 6</span>
+                    </div>
+                    <ul class="hint-list">
+                        <li>Без контактных данных</li>
+                        <li>Без дискриминации по возрасту, полу и др.</li>
+                        <li>Не менее 150 символов</li>
+                    </ul>
+                    <textarea name="description" rows="6" class="profile-input" placeholder="Обязанности, требования, условия..."></textarea>
+                </section>
+
+                <section id="replies" class="create-card">
+                    <div class="create-card__header">
+                        <h2 class="text-18-600">Отклики</h2>
+                        <span class="create-tag">Шаг 7</span>
+                    </div>
+                    <div class="toggle-list">
+                        <label class="toggle-row">
+                            <div>
+                                <p class="text-18-600" style="font-size: 14px;">Подростки и молодёжь</p>
+                                <p class="profile-text" style="color: hsl(var(--twc-grey-500));">Настройте допустимый возраст</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span></span>
+                            </label>
+                        </label>
+                        <label class="toggle-row">
+                            <div>
+                                <p class="text-18-600" style="font-size: 14px;">Люди с инвалидностью</p>
+                                <p class="profile-text" style="color: hsl(var(--twc-grey-500));">Поможет получить больше кандидатов</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span></span>
+                            </label>
+                        </label>
+                        <label class="toggle-row">
+                            <div>
+                                <p class="text-18-600" style="font-size: 14px;">Не разрешать отклики без ответов</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span></span>
+                            </label>
+                        </label>
+                    </div>
+                </section>
+
+                <section id="contacts" class="create-card">
+                    <div class="create-card__header">
+                        <h2 class="text-18-600">Способы связи</h2>
+                        <span class="create-tag">Шаг 8</span>
+                    </div>
+                    <div class="field">
+                        <label class="profile-label">Контакты в вакансии</label>
+                        <input type="text" class="profile-input" placeholder="Имя менеджера, email, телефон">
+                    </div>
+                    <label class="toggle-row">
+                        <span>Уведомлять об откликах на email</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span></span>
+                        </label>
+                    </label>
+                    <label class="toggle-row">
+                        <span>Разрешить переписку в чате</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span></span>
+                        </label>
+                    </label>
+                </section>
+
+                <section id="publish" class="create-card">
+                    <div class="create-card__header">
+                        <h2 class="text-18-600">Публикация</h2>
+                        <span class="create-tag">Шаг 9</span>
+                    </div>
+                    <input type="hidden" name="tariff" data-group="tariff" value="standard">
+                    <div class="field">
+                        <label class="profile-label">Город публикации</label>
+                        <input type="text" class="profile-input" placeholder="Укажите город публикации">
+                    </div>
+                    <div class="tariff-row" style="margin-top: 14px;">
+                        <button type="button" class="tariff-card is-active" data-group="tariff" data-value="standard">
+                            <p class="text-18-600">Стандарт</p>
+                            <p class="profile-text" style="color: hsl(var(--twc-grey-400));">Без продвижения, для планового поиска</p>
+                        </button>
+                        <button type="button" class="tariff-card" data-group="tariff" data-value="standard_plus">
+                            <p class="text-18-600">Стандарт плюс</p>
+                            <p class="profile-text" style="color: hsl(var(--twc-grey-400));">С продвижением для быстрого поиска</p>
+                        </button>
+                        <button type="button" class="tariff-card" data-group="tariff" data-value="premium">
+                            <p class="text-18-600">Премиум</p>
+                            <p class="profile-text" style="color: hsl(var(--twc-grey-400));">Максимальная заметность 7 дней</p>
+                        </button>
+                    </div>
+                </section>
+
+                <div class="create-footer create-card">
+                    <div class="create-footer__status">
+                        <span class="status-dot"></span>
+                        <span>Все изменения будут сохранены при отправке</span>
+                    </div>
+                    <div class="create-footer__actions">
+                        <a href="{{ url_for('manage') }}" class="ra-button preset default">Назад</a>
+                        <button type="submit" name="submit_action" value="draft" class="ra-button preset default">Сохранить черновик</button>
+                        <button type="submit" name="submit_action" value="publish" class="ra-button preset primary">Опубликовать</button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+        {% endif %}
     </div>
 </div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function updateHidden(group) {
+        const hidden = document.querySelector(`input[type=\"hidden\"][data-group=\"${group}\"]`);
+        if (!hidden) return;
+        const buttons = Array.from(document.querySelectorAll(`.pill[data-group=\"${group}\"], .tariff-card[data-group=\"${group}\"]`));
+        const multi = buttons.some(b => b.dataset.multi === 'true');
+        if (multi) {
+            const activeValues = buttons.filter(b => b.classList.contains('is-active')).map(b => b.dataset.value);
+            hidden.value = activeValues.join(',');
+        } else {
+            const active = buttons.find(b => b.classList.contains('is-active'));
+            if (active) hidden.value = active.dataset.value;
+        }
+    }
+
+    document.querySelectorAll('.pill[data-group]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const group = btn.dataset.group;
+            const multi = btn.dataset.multi === 'true';
+            if (multi) {
+                btn.classList.toggle('is-active');
+            } else {
+                document.querySelectorAll(`.pill[data-group=\"${group}\"]`).forEach(b => b.classList.remove('is-active'));
+                btn.classList.add('is-active');
+            }
+            updateHidden(group);
+        });
+    });
+
+    document.querySelectorAll('.tariff-card[data-group]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const group = btn.dataset.group;
+            document.querySelectorAll(`.tariff-card[data-group=\"${group}\"]`).forEach(b => b.classList.remove('is-active'));
+            btn.classList.add('is-active');
+            updateHidden(group);
+        });
+    });
+
+    const groups = new Set(Array.from(document.querySelectorAll('[data-group]')).map(el => el.dataset.group));
+    groups.forEach(updateHidden);
+});
+</script>
+{% endblock %}
 {% endblock %}

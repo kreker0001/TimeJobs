@@ -9,11 +9,11 @@
                 <p class="chat-eyebrow">Чат по отклику</p>
                 <h1>{{ job.title if job else 'Вакансия удалена' }}</h1>
                 <p class="chat-subtitle">
-                    Общайтесь с собеседником напрямую, чтобы договориться о следующем шаге.
+                    Общайтесь напрямую, чтобы договориться о следующем шаге.
                 </p>
                 <div class="chat-chips">
                     <span class="chat-chip">Статус: {{ status_label }}</span>
-                    <span class="chat-chip">Отклик от {{ app_obj.created_at.strftime('%d.%m.%Y') if app_obj.created_at else 'неизвестной даты' }}</span>
+                    <span class="chat-chip">Отклик от {{ app_obj.created_at.strftime('%d.%m.%Y') if app_obj.created_at else 'дата неизвестна' }}</span>
                 </div>
             </div>
             <div class="chat-header__actions">
@@ -55,14 +55,14 @@
                     <div class="chat-bubble{% if mine %} chat-bubble--mine{% endif %}" id="{% if loop.last %}last{% endif %}">
                         <div class="chat-bubble__meta">
                             <span class="chat-author">
-                                {% if msg.is_system %}Система{% elif mine %}Вы{% else %}{{ msg.sender.name or 'Собеседник' }}{% endif %}
+                                {% if msg.is_system %}Система{% elif mine %}Вы{% else %}{{ msg.sender.name or 'Пользователь' }}{% endif %}
                             </span>
                             <span class="chat-time">{{ msg.created_at.strftime('%d.%m.%Y %H:%M') if msg.created_at else '' }}</span>
                         </div>
                         <div class="chat-bubble__text">{{ (msg.text or '') | e | replace('\n', '<br>') | safe }}</div>
                     </div>
                 {% else %}
-                    <div class="chat-empty">Пока нет сообщений — напишите первое, чтобы начать диалог.</div>
+                    <div class="chat-empty">Пока нет сообщений. Начните диалог, чтобы обсудить детали.</div>
                 {% endfor %}
             </div>
 
@@ -71,9 +71,13 @@
                     <form method="post" action="{{ url_for('update_application_status', app_id=app_obj.id) }}" class="chat-offer">
                         <input type="hidden" name="action" value="start_work">
                         <input type="hidden" name="next" value="{{ url_for('application_chat', app_id=app_obj.id) }}">
-                        <label for="work-units">Укажите смены/часы</label>
-                        <input id="work-units" type="number" name="units" min="1" required>
-                        <button type="submit" class="chat-submit">Отправить в работу</button>
+                        <label for="work-units">Укажите смены/часы и оплату за единицу</label>
+                        <div class="chat-offer__grid">
+                            <input id="work-units" type="number" name="units" min="1" value="1" required>
+                            <input type="number" name="amount" min="1" step="0.01" value="{{ job.wage or '' }}" placeholder="Сумма оплаты" required>
+                        </div>
+                        <p class="chat-hint">По умолчанию подставлена оплата из вакансии, при необходимости скорректируйте.</p>
+                        <button type="submit" class="chat-submit">Отправить предложение о работе</button>
                     </form>
                 {% elif is_worker and app_obj.status == 'work_offer' %}
                     <div class="chat-offer chat-offer--row">
@@ -93,8 +97,8 @@
                     <form method="post" action="{{ url_for('update_application_status', app_id=app_obj.id) }}" class="chat-offer chat-offer--row">
                         <input type="hidden" name="action" value="complete_work">
                         <input type="hidden" name="next" value="{{ url_for('application_chat', app_id=app_obj.id) }}">
-                        <div>Заморожено к выплате: {{ app_obj.frozen_amount or 0 }}</div>
-                        <button type="submit" class="chat-submit">Подтвердить выполнение</button>
+                        <div>Перечислить оплату: {{ app_obj.frozen_amount or 0 }}</div>
+                        <button type="submit" class="chat-submit">Закрыть отклик</button>
                     </form>
                 {% endif %}
             </div>
@@ -107,7 +111,7 @@
                           placeholder="Напишите сообщение работодателю или кандидату"
                           required></textarea>
                 <div class="chat-form__actions">
-                    <a class="chat-link" href="{{ back_url }}">Вернуться назад</a>
+                    <a class="chat-link" href="{{ back_url }}">Вернуться к откликам</a>
                     <button type="submit" class="chat-submit">Отправить</button>
                 </div>
             </form>

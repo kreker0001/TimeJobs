@@ -13,6 +13,32 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tj.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
+    <style>
+        .flash-stack {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 360px;
+        }
+        .flash {
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: #0b0d0f;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            background: #e5f0ff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .flash--success { background: #d1f5d3; }
+        .flash--error { background: #ffd6d6; }
+        .flash--warning { background: #fff3c8; }
+        .flash--info { background: #dbeafe; }
+    </style>
+
 	
 	
 
@@ -45,12 +71,18 @@
 
             {% if current_user and current_user.role == 'worker' %}
             <!-- Мои отклики -->
-            <a data-v-477edc33="" href="{{ url_for('my_applications') }}" class="">
+            <a data-v-477edc33="" href="{{ url_for('worker_cabinet') }}" class="">
+                <button data-v-477edc33=""
+                        class="ra-button preset landing-tab{% if active_page == 'worker_cabinet' %} landing-tab--active{% endif %}">
+                    <div class="wrapper flex justify-center opacity-100 gap-1.5">Кабинет соискателя</div>
+                </button>
+            </a>
+            <!-- <a data-v-477edc33="" href="{{ url_for('my_applications') }}" class="">
                 <button data-v-477edc33=""
                         class="ra-button preset landing-tab{% if active_page == 'my_applications' %} landing-tab--active{% endif %}">
                     <div class="wrapper flex justify-center opacity-100 gap-1.5">Мои отклики</div>
                 </button>
-            </a>
+            </a> -->
             {% endif %}
 
             {% if current_user and current_user.role == 'employer' %}
@@ -58,17 +90,18 @@
             <a data-v-477edc33="" href="{{ url_for('manage') }}" class="">
                 <button data-v-477edc33=""
                         class="ra-button preset landing-tab{% if active_page == 'manage' %} landing-tab--active{% endif %}">
-                    <div class="wrapper flex justify-center opacity-100 gap-1.5">Отклики</div>
+                    <div class="wrapper flex justify-center opacity-100 gap-1.5">Кабинет работодателя</div>
                 </button>
             </a>
 
             <!-- Разместить вакансию -->
-            <a data-v-477edc33="" href="{{ url_for('post_job') }}" class="">
+             
+            <!--<a data-v-477edc33="" href="{{ url_for('post_job') }}" class="">
                 <button data-v-477edc33=""
                         class="ra-button preset landing-tab{% if active_page == 'post_job' %} landing-tab--active{% endif %}">
                     <div class="wrapper flex justify-center opacity-100 gap-1.5">Разместить вакансию</div>
                 </button>
-            </a>
+            </a>-->
             {% endif %}
 
             {% if current_user and current_user.role == 'moderator' %}
@@ -106,6 +139,16 @@
 
 
 
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-stack">
+        {% for category, message in messages %}
+        <div class="flash flash--{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
 
     {% block content %}{% endblock %}
 

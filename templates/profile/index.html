@@ -4,159 +4,159 @@
 {% block content %}
 <section class="bg-dot-pattern-2 profile-page">
     <div class="profile-inner">
-
-        {# ===== HERO: О себе + статистика ===== #}
         <div class="glass-card profile-hero">
             <div class="profile-hero-left">
-                <img
-                    src="{{ current_user.avatar_url or current_user.avatar or default_avatar(current_user.name) }}"
-                    alt="Аватар"
-                    class="profile-avatar-img"
-                >
+                <img src="{{ current_user.avatar_url or current_user.avatar or default_avatar(current_user.name) }}"
+                     alt="Аватар"
+                     class="profile-avatar-img">
                 <div>
-                    <div class="profile-name">
-                        {{ current_user.name }}
-                    </div>
+                    <div class="profile-name">{{ current_user.name }}</div>
                     <div class="profile-role">
-                        {% if current_user.role == 'worker' %}
-                        Соискатель
-                        {% elif current_user.role == 'employer' %}
-                        Работодатель
-                        {% elif current_user.role == 'moderator' %}
-                        Модератор
-                        {% else %}
-                        Пользователь
-                        {% endif %}
+                        {% if current_user.role == 'worker' %}Соискатель{% elif current_user.role == 'employer' %}Работодатель{% elif current_user.role == 'moderator' %}Модератор{% else %}Пользователь{% endif %}
                     </div>
-                </div>
-            </div>
-
-            <div class="profile-hero-right">
-                <div class="profile-stat-field">
-                    <div class="profile-label">Рейтинг</div>
-                    <div class="profile-input profile-input--readonly">
-                        {% if profile_stats and profile_stats.rating is not none %}
-                            {{ '%.1f'|format(profile_stats.rating) }}
-                        {% else %}
-                            —
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="profile-stat-field">
-                    <div class="profile-label">
-                        {% if current_user.role == 'employer' %}
-                            Вакансий
-                        {% else %}
-                            Откликов
-                        {% endif %}
-                    </div>
-                    <div class="profile-input profile-input--readonly">
-                        {{ profile_stats.jobs if profile_stats else 0 }}
-                    </div>
-                </div>
-                <div class="profile-stat-field">
-                    <div class="profile-label">
-                        {% if current_user.role == 'employer' %}
-                            Откликов на вакансии
-                        {% else %}
-                            Всего действий
-                        {% endif %}
-                    </div>
-                    <div class="profile-input profile-input--readonly">
-                        {{ profile_stats.responses if profile_stats else 0 }}
-                    </div>
+                    {% if current_user.role == 'worker' %}
+                    <p class="profile-note" style="margin-top: 6px;">Личный профиль.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        {# ===== НИЖНЯЯ СЕТКА: левая / правая колонка ===== #}
-        <div class="profile-body">
-            {# Левая колонка — форма профиля #}
-            <div class="glass-card profile-card profile-card--main">
-                <h2 class="profile-card__title">Профиль</h2>
-
-                <form method="post" class="profile-form">
-                    <div class="profile-form-grid">
-                        <div class="profile-field">
-                            <label class="profile-label">Телефон</label>
-                            <input name="phone"
-                                   value="{{ current_user.phone or '' }}"
-                                   class="profile-input">
-                        </div>
-
-                        <div class="profile-field">
-                            <label class="profile-label">Опыт (лет)</label>
-                            <input name="exp_years"
-                                   type="number"
-                                   min="0"
-                                   value="{{ current_user.exp_years or 0 }}"
-                                   class="profile-input">
-                        </div><div class="profile-field profile-field--wide">
-                            <label class="profile-label">Образование / о себе</label>
-                            <textarea name="education"
-                                      rows="4"
-                                      class="profile-input profile-input--textarea"
-                                      placeholder="Кратко расскажите о себе">{{ current_user.education or '' }}</textarea>
+        <div class="resume-card glass-card" style="margin-top: 16px;">
+            <div class="resume-card__title">Личные данные</div>
+            <form method="post" action="{{ url_for('update_worker_profile') }}" class="profile-form">
+                <div class="create-grid two">
+                    <div class="field">
+                        <label class="profile-label">Фамилия</label>
+                        <input name="last_name" value="{{ current_user.last_name or '' }}" class="profile-input" placeholder="Иванов">
+                    </div>
+                    <div class="field">
+                        <label class="profile-label">Имя</label>
+                        <input name="first_name" value="{{ current_user.first_name or '' }}" class="profile-input" placeholder="Максим">
+                    </div>
+                </div>
+                <div class="create-grid two">
+                    <div class="field">
+                        <label class="profile-label">Отчество</label>
+                        <input name="middle_name" value="{{ current_user.middle_name or '' }}" class="profile-input" placeholder="Владимирович">
+                    </div>
+                    <div class="field">
+                        <label class="profile-label">Номер телефона</label>
+                        <input name="phone" value="{{ current_user.phone or '' }}" class="profile-input" placeholder="+7 (999) 999-99-99">
+                    </div>
+                </div>
+                <div class="create-grid two">
+                    <div class="field">
+                        <label class="profile-label">Город проживания</label>
+                        <input name="city" value="{{ current_user.city or '' }}" class="profile-input" placeholder="Москва">
+                    </div>
+                    <div class="field">
+                        <label class="profile-label">Пол</label>
+                        <select name="gender" class="profile-input" style="cursor:pointer;">
+                            <option value="">Не указан</option>
+                            <option value="male" {% if current_user.gender == 'male' %}selected{% endif %}>Мужской</option>
+                            <option value="female" {% if current_user.gender == 'female' %}selected{% endif %}>Женский</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="create-grid two">
+                    <div class="field">
+                        <label class="profile-label">Дата рождения</label>
+                        {% set bdate = current_user.birth_date %}
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                            <select name="birth_day" class="profile-input" style="cursor:pointer;">
+                                <option value="">День</option>
+                                {% for day in range(1,32) %}
+                                <option value="{{ day }}" {% if bdate and bdate.day == day %}selected{% endif %}>{{ '%02d'|format(day) }}</option>
+                                {% endfor %}
+                            </select>
+                            <select name="birth_month" class="profile-input" style="cursor:pointer;">
+                                <option value="">Месяц</option>
+                                {% for value, title in months %}
+                                <option value="{{ value }}" {% if bdate and bdate.month|string == value %}selected{% endif %}>{{ title }}</option>
+                                {% endfor %}
+                            </select>
+                            <select name="birth_year" class="profile-input" style="cursor:pointer;">
+                                <option value="">Год</option>
+                                {% for year in years %}
+                                <option value="{{ year }}" {% if bdate and bdate.year == year %}selected{% endif %}>{{ year }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
-
-                    {# Страховой взнос — только для соискателя #}
-                    {% if current_user.role == 'worker' %}
-                    <div class="profile-deposit">
-                        <div class="profile-deposit-text">
-                            Страховой взнос повышает доверие работодателей и может быть
-                            использован в спорных ситуациях.
-                        </div>
-                        <div class="profile-deposit-field">
-                            <label class="profile-label">Страховой взнос, ₽</label>
-                            <input name="deposit"
-                                   type="number"
-                                   min="0"
-                                   step="100"
-                                   value="{{ current_user.deposit or '' }}"
-                                   class="profile-input">
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <div class="profile-actions">
-                        <button class="profile-save-btn">
-                            Сохранить
-                        </button>
-                    </div>
-                </form>
+                </div>
+                <div class="resume-actions" style="margin-top:10px;">
+                    <button type="submit" class="resume-btn resume-btn--primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+        <div class="profile-stat-field">
+            <div class="profile-action-card glass-card">
+                <div class="profile-action-card__info">
+                    <div class="profile-action-card__eyebrow">Действия</div>
+                    <div class="profile-action-card__hint">Управляйте сеансом и безопасностью</div>
+                </div>
+                <div class="profile-action-card__buttons">
+                    <a href="{{ url_for('logout') }}" class="profile-action-btn profile-action-btn--ghost">
+                        <span class="profile-action-btn__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M14 16l-4-4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M10 12h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M4 5h6a2 2 0 012 2v10a2 2 0 01-2 2H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span>Выйти</span>
+                    </a>
+                    <a href="/change_password" class="profile-action-btn profile-action-btn--accent">
+                        <span class="profile-action-btn__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M7 11V8a5 5 0 1110 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M12 15v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span>Сменить пароль</span>
+                    </a>
+                </div>
             </div>
-
-            {# Правая колонка — без градиентов, как форма #}
-            <div class="glass-card profile-card profile-card--side">
-				<h2 class="profile-card__title">Аккаунт</h2>
-
-				<div class="profile-side-section">
-					<h3 class="profile-side-subtitle">Безопасность</h3>
-					<div class="profile-field">
-						<label class="profile-label">Почта</label>
-						<div class="profile-input profile-input--readonly">
-							{{ current_user.email }}
-						</div>
-					</div>
-					<p class="profile-note">
-						Смену пароля можно сделать отдельной формой и обработчиком,
-						например, на <code>/change_password</code>.
-					</p>
-				</div>
-
-				{# один общий блок, который уедет вниз #}
-				<div class="profile-side-session">
-					<h3 class="profile-side-subtitle">Сессия</h3>
-					<p class="profile-text">
-						Выйдите из аккаунта на этом устройстве.
-					</p>
-					<a href="{{ url_for('logout') }}" class="profile-logout-btn">
-						Выйти
-					</a>
-				</div>
-			</div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const body = document.body;
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        modal.classList.add('is-open');
+        body.style.overflow = 'hidden';
+    }
+    function closeModal(modal) {
+        modal.classList.remove('is-open');
+        body.style.overflow = '';
+    }
+    document.querySelectorAll('[data-modal-open]').forEach(btn => {
+        btn.addEventListener('click', () => openModal(btn.dataset.modalOpen));
+    });
+    document.querySelectorAll('.tj-modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal(modal);
+        });
+    });
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('[data-modal-close]')) {
+            const modal = e.target.closest('.tj-modal');
+            if (modal) closeModal(modal);
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.tj-modal.is-open').forEach(closeModal);
+        }
+    });
+});
+</script>
 {% endblock %}

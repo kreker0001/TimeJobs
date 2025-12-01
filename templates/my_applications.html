@@ -1,83 +1,113 @@
 {% extends "base.html" %}
-{% block title %}Мои отклики — Time Jobs{% endblock %}
+{% block title %}Отклики на вакансии — Time Jobs{% endblock %}
 
 {% block content %}
-<div class="profile-page">
-    <div class="profile-inner">
-
-        <!-- Заголовок страницы -->
-        <div class="profile-hero">
-            <div class="profile-hero-left">
-                <div>
-                    <h1 class="text-18-600" style="font-size: 24px;">Мои отклики</h1>
-                    <p class="profile-text" style="font-size: 13px; color: hsl(var(--twc-grey-400));">
-                        Здесь отображаются все ваши отклики на вакансии.
-                    </p>
-                </div>
+<div class="responses-shell">
+    <div class="responses-inner">
+        <header class="responses-header glass-card">
+            <div>
+                <p class="responses-eyebrow">Ваши отклики</p>
+                <h1>Отклики на вакансии</h1>
+                <p class="responses-subtitle">
+                    Отслеживайте ответы работодателей, переходите к вакансиям и общайтесь по деталям условий.
+                </p>
             </div>
+        </header>
+
+        <div class="responses-tabs glass-card">
+            {% for tab in filter_options %}
+            <a href="{{ url_for('my_applications', filter=tab.key) }}"
+               class="responses-tab{% if active_filter == tab.key %} is-active{% endif %}">
+                <span>{{ tab.label }}</span>
+                <span class="responses-tab__count">{{ tab.count }}</span>
+            </a>
+            {% endfor %}
         </div>
 
         {% if not applications %}
-        <div class="glass-card"
-             style="padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); color: hsl(var(--twc-grey-200));">
-            Вы ещё не откликались ни на одну вакансию.
+        <div class="glass-card responses-empty">
+            <p class="responses-empty__title">Откликов пока нет</p>
+            <p class="responses-empty__text">
+                Добавьте подходящие вакансии в отклики, чтобы видеть их здесь.
+            </p>
+            <a href="{{ url_for('vacancies') }}" class="responses-btn primary">Перейти к вакансиям</a>
         </div>
-
         {% else %}
-
-        <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 15px;">
-
+        <div class="responses-list">
             {% for app in applications %}
-            <div class="glass-card"
-                 style="
-                    padding: 18px 20px;
-                    border-radius: 18px;
-                    border: 1px solid rgba(255,255,255,0.06);
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: flex-start;
-                    gap: 16px;
-                 ">
-
-                <!-- Левая часть: информация о вакансии -->
-                <div>
-                    <div class="text-18-600" style="font-size: 16px; margin-bottom: 4px;">
-                        {{ app.job.title }}
+                {% set status_info = status_labels.get(app.status, {'label':'Без статуса','css':'muted'}) %}
+                {% set job_link = url_for('vacancy_detail', job_id=app.job.id) if app.job else None %}
+                {% set employer = app.job.employer if app.job else None %}
+                {% set contact_href = None %}
+                {% if employer and employer.phone %}
+                    {% set contact_href = 'tel:' ~ employer.phone %}
+                {% elif employer and employer.email %}
+                    {% set contact_href = 'mailto:' ~ employer.email %}
+                {% else %}
+                    {% set contact_href = 'mailto:support@timejobs.local' %}
+                {% endif %}
+                <article class="responses-card glass-card">
+                    <div class="responses-card__status responses-status--{{ status_info.css }}">
+                        <span class="dot"></span>{{ status_info.label }}
                     </div>
-
-                    <div class="profile-text" style="font-size: 13px; color: hsl(var(--twc-grey-400));">
-                        {{ app.job.city or 'Город не указан' }} • {{ app.job.specialization or 'Специализация не указана' }}
+                    <div class="responses-card__body">
+                        <div class="responses-card__main">
+                            <h3>{{ app.job.title if app.job else 'Вакансия удалена' }}</h3>
+                            <p class="responses-company">
+                                {{ app.job.employer.name if app.job and app.job.employer else 'Работодатель не указан' }}
+                            </p>
+                            <p class="responses-meta">
+                                {{ app.created_at.strftime('%d.%m.%Y') if app.created_at else 'Дата не указана' }} ·
+                                {{ app.job.city or 'Город не указан' }}
+                            </p>
+                            <div class="responses-tags">
+                                <span>Специализация</span>
+                                <span>{{ app.job.specialization or 'Не указано' }}</span>
+                            </div>
+                        </div>
+                        {% set chat_info = chat_meta.get(app.id) %}
+                        {% set last_text = (chat_info.last.text if chat_info and chat_info.last else '') | replace('\\n', ' ') %}
+                        <div class="chat-preview responses-chat">
+                            <div class="chat-preview__content">
+                                <div class="chat-preview__label">Чат с работодателем</div>
+                                {% if chat_info %}
+                                    <div class="chat-preview__text">
+                                        <span class="chat-preview__count">{{ chat_info.count }}</span>
+                                        <span class="chat-preview__snippet">
+                                            <strong>{{ 'Вы' if chat_info.last.sender_id == current_user.id else (employer.name if employer else 'Работодатель') }}</strong>:
+                                            {{ last_text[:120] }}{% if last_text|length > 120 %}…{% endif %}
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <div class="chat-preview__text chat-preview__text--muted">Пока нет сообщений</div>
+                                {% endif %}
+                            </div>
+                            {% set chat_allowed = app.status in ['awaiting_approval','work_offer','in_work','completed'] %}
+                            {% if chat_allowed %}
+                                <a class="responses-btn secondary" href="{{ url_for('application_chat', app_id=app.id) }}">Открыть чат</a>
+                            {% else %}
+                                <span class="responses-btn secondary" aria-disabled="true" style="opacity:0.6;cursor:not-allowed;">После согласования</span>
+                            {% endif %}
+                        </div>
+                        <div class="responses-card__actions">
+                            {% if job_link %}
+                            <a class="responses-btn ghost" href="{{ job_link }}">Посмотреть вакансию</a>
+                            {% else %}
+                            <span class="responses-btn ghost" aria-disabled="true" style="opacity:0.6;cursor:not-allowed;">Вакансия недоступна</span>
+                            {% endif %}
+                            <a class="responses-btn secondary" href="{{ contact_href }}">Написать</a>
+                            <form method="post"
+                                  action="{{ url_for('withdraw_application', app_id=app.id) }}"
+                                  onsubmit="return confirm('Отменить отклик?');"
+                                  style="display:inline;">
+                                <button class="responses-btn outline" type="submit">Отменить отклик</button>
+                            </form>
+                        </div>
                     </div>
-
-                    {% if app.note %}
-                    <div class="profile-text" style="font-size: 12px; color: hsl(var(--twc-grey-300)); margin-top: 6px;">
-                        Ваш комментарий: "{{ app.note }}"
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- Правая часть: дата и статус -->
-                <div style="text-align: right;">
-                    <div style="font-size: 12px; color: hsl(var(--twc-grey-400));">
-                        {{ app.created_at.strftime('%d.%m.%Y') }}
-                    </div>
-
-                    <div style="margin-top: 3px; font-size: 12px; color:
-                        {% if app.status == 'approved' %} #4CFA00
-                        {% elif app.status == 'pending' %} #FACC15
-                        {% else %} #A8B3CF
-                        {% endif %}
-                    ;">
-                        Статус: {{ app.status }}
-                    </div>
-                </div>
-
-            </div>
+                </article>
             {% endfor %}
-
         </div>
         {% endif %}
-
     </div>
 </div>
 {% endblock %}

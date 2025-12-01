@@ -1,0 +1,491 @@
+{% extends "base.html" %}
+{% block title %}Кабинет работника — Time Jobs{% endblock %}
+
+{% block content %}
+<style>
+    .resume-shell {
+        padding-bottom: 24px;
+    }
+    .resume-columns {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 14px;
+        margin-top: 14px;
+    }
+    .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+    .section-note {
+        margin-top: 4px;
+        color: var(--text-muted, #9ca3af);
+        font-size: 13px;
+    }
+    .resume-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .resume-item {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+    }
+    .profile-label {
+        font-size: 13px;
+        color: var(--text-muted, #9ca3af);
+    }
+    .hint-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 12px;
+        padding: 4px 10px;
+        font-size: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .item-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .skills-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .skill-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+</style>
+
+<div class="resume-shell bg-dot-pattern-2">
+    <div class="profile-inner">
+        <div class="resume-hero glass-card">
+            <div class="resume-hero__left">
+                <div class="resume-hero__badge">Мои резюме ({{ resumes_count }})</div>
+                <h1 class="resume-hero__title">Рабочий кабинет</h1>
+                <p class="resume-hero__subtitle">
+                    Заполните профиль, добавьте образование, опыт и навыки, чтобы работодатели могли быстрее вас найти.
+                </p>
+                <div class="resume-hero__cta">
+                    <a href="{{ url_for('my_applications') }}" class="resume-btn resume-btn--primary">Мои отклики</a>
+                    <a href="{{ url_for('vacancies') }}" class="resume-btn resume-btn--ghost">Поиск вакансий</a>
+                </div>
+            </div>
+            <div class="resume-hero__stats">
+                <div class="resume-chip resume-chip--success">Рейтинг: {{ '%.1f'|format(current_user.rating or 0) }}</div>
+                <div class="resume-chip">Откликов: {{ applied_count }}</div>
+                <div class="resume-chip">В работе: {{ accepted_count }}</div>
+                <div class="resume-progress" style="margin-top: 10px;">
+                    <div class="resume-progress__bar"><span style="width: {{ progress }}%;"></span></div>
+                    <div class="resume-progress__text">Заполнено {{ progress }}%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="resume-grid" style="margin: 14px 0 0 0;">
+            <div class="resume-card glass-card resume-card--deposit">
+                <div class="resume-card__title">Доступный баланс</div>
+                <div class="deposit-metric">
+                    <div class="deposit-amount">{{ current_user.deposit or 0 }} ₽</div>
+                    <div class="deposit-note">Нужна предоплата для бронирования? Пополните баланс, чтобы подтверждать предложения от работодателей.</div>
+                </div>
+                <form method="post" action="{{ url_for('worker_deposit') }}" class="deposit-form">
+                    <input type="number" name="deposit_amount" min="100" step="100" placeholder="Пополнить от 100 ₽" class="deposit-input">
+                    <button type="submit" class="resume-btn resume-btn--primary">Пополнить</button>
+                </form>
+            </div>
+            <div class="resume-card glass-card">
+                <div class="resume-card__title">Статус заполнения профиля</div>
+                {% if missing_fields %}
+                <div class="resume-tags resume-tags--wrap" style="margin-top: 8px;">
+                    {% for item in missing_fields %}
+                    <span class="resume-tag">{{ item }}</span>
+                    {% endfor %}
+                </div>
+                <p class="resume-card__text" style="margin-top: 8px;">Добавьте недостающие данные, чтобы повысить шансы на получение предложений.</p>
+                {% else %}
+                <p class="resume-card__text" style="margin-top: 8px;">Профиль заполнен. Продолжайте откликаться на вакансии!</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="resume-columns">
+            <!-- Образование -->
+            <div class="resume-card glass-card">
+                <div class="section-head">
+                    <div>
+                        <div class="resume-card__title">Образование</div>
+                        <div class="section-note">Добавьте учебные заведения и год окончания.</div>
+                    </div>
+                    <button type="button" class="resume-btn resume-btn--primary" data-modal-open="edu-modal">Добавить учебное заведение</button>
+                </div>
+
+                {% if educations %}
+                <div class="resume-list">
+                    {% for edu in educations %}
+                    <div class="resume-item">
+                        <form method="post" action="{{ url_for('save_worker_education') }}" class="profile-form" style="gap: 10px;">
+                            <input type="hidden" name="education_id" value="{{ edu.id }}">
+                            <div class="form-row">
+                                <div class="field">
+                                    <label class="profile-label">Уровень</label>
+                                    <select name="level" class="profile-input" style="cursor: pointer;">
+                                        <option value="">Выберите уровень</option>
+                                        {% for level in education_levels %}
+                                        <option value="{{ level }}" {% if edu.level == level %}selected{% endif %}>{{ level }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label class="profile-label">Учебное заведение</label>
+                                    <input name="institution" value="{{ edu.institution or '' }}" class="profile-input" placeholder="Название вуза/колледжа">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="field">
+                                    <label class="profile-label">Факультет</label>
+                                    <input name="faculty" value="{{ edu.faculty or '' }}" class="profile-input" placeholder="Факультет">
+                                </div>
+                                <div class="field">
+                                    <label class="profile-label">Специализация</label>
+                                    <input name="specialization" value="{{ edu.specialization or '' }}" class="profile-input" placeholder="Специализация">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="field">
+                                    <label class="profile-label">Год окончания</label>
+                                    <input name="graduation_year" type="number" min="1900" max="2099" value="{{ edu.graduation_year or '' }}" class="profile-input">
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <button type="submit" class="resume-btn resume-btn--primary">Сохранить</button>
+                                <form method="post" action="{{ url_for('delete_worker_education', education_id=edu.id) }}">
+                                    <button type="submit" class="resume-btn resume-btn--ghost">Удалить</button>
+                                </form>
+                            </div>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="resume-card__text" style="margin-top: 10px;">Добавьте первое образование — это повышает доверие работодателей.</p>
+                {% endif %}
+            </div>
+
+            <!-- Опыт работы -->
+            <div class="resume-card glass-card">
+                <div class="section-head">
+                    <div>
+                        <div class="resume-card__title">Опыт работы</div>
+                        <div class="section-note">Опишите места работы и период.</div>
+                    </div>
+                    <button type="button" class="resume-btn resume-btn--primary" data-modal-open="exp-modal">Добавить опыт</button>
+                </div>
+
+                {% if experiences %}
+                <div class="resume-list">
+                    {% for exp in experiences %}
+                    <div class="resume-item">
+                        <form method="post" action="{{ url_for('save_worker_experience') }}" class="profile-form" style="gap: 10px;">
+                            <input type="hidden" name="experience_id" value="{{ exp.id }}">
+                            <div class="form-row">
+                                <div class="field">
+                                    <label class="profile-label">Компания</label>
+                                    <input name="company" value="{{ exp.company or '' }}" class="profile-input" placeholder='Например, "Ромашка"'>
+                                </div>
+                                <div class="field">
+                                    <label class="profile-label">Должность</label>
+                                    <input name="title" value="{{ exp.title or '' }}" class="profile-input" placeholder="Ваша роль">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="profile-label">Обязанности</label>
+                                <textarea name="duties" rows="3" class="profile-input profile-input--textarea" placeholder="Кратко: задачи, инструменты">{{ exp.duties or '' }}</textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="field">
+                                    <label class="profile-label">Начало</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                        <select name="start_month" class="profile-input" style="cursor: pointer;">
+                                            <option value="">Месяц</option>
+                                            {% for value, title in months %}
+                                            <option value="{{ value }}" {% if exp.start_month == value %}selected{% endif %}>{{ title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <input name="start_year" type="number" min="1900" max="2099" value="{{ exp.start_year or '' }}" class="profile-input" placeholder="Год">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="profile-label">Окончание</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                        <select name="end_month" class="profile-input" style="cursor: pointer;">
+                                            <option value="">Месяц</option>
+                                            {% for value, title in months %}
+                                            <option value="{{ value }}" {% if exp.end_month == value %}selected{% endif %}>{{ title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <input name="end_year" type="number" min="1900" max="2099" value="{{ exp.end_year or '' }}" class="profile-input" placeholder="Год">
+                                    </div>
+                                    <label class="toggle-row" style="margin-top: 6px; align-items: center; gap: 8px;">
+                                        <input type="checkbox" name="is_current" style="width: 16px; height: 16px;" {% if exp.is_current %}checked{% endif %}>
+                                        <span>Работаю сейчас</span>
+                                        <span class="hint-chip">Текущее место</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <button type="submit" class="resume-btn resume-btn--primary">Сохранить</button>
+                                <form method="post" action="{{ url_for('delete_worker_experience', experience_id=exp.id) }}">
+                                    <button type="submit" class="resume-btn resume-btn--ghost">Удалить</button>
+                                </form>
+                            </div>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="resume-card__text" style="margin-top: 10px;">Добавьте опыт работы, даже небольшой — это поможет выделиться.</p>
+                {% endif %}
+            </div>
+
+            <!-- Навыки -->
+            <div class="resume-card glass-card">
+                <div class="section-head">
+                    <div>
+                        <div class="resume-card__title">Навыки</div>
+                        <div class="section-note">Отметьте ключевые навыки, которые хотите подчеркнуть.</div>
+                    </div>
+                    <button type="button" class="resume-btn resume-btn--primary" data-modal-open="skill-modal">Добавить навык</button>
+                </div>
+
+                {% if key_skills or other_skills %}
+                <div class="skills-stack">
+                    {% for skill in key_skills %}
+                    <div class="skill-row">
+                        <span class="hint-chip">★ {{ skill.name }}</span>
+                        <form method="post" action="{{ url_for('toggle_worker_skill', skill_id=skill.id) }}">
+                            <button type="submit" class="resume-btn resume-btn--ghost">Сделать обычным</button>
+                        </form>
+                        <form method="post" action="{{ url_for('delete_worker_skill', skill_id=skill.id) }}">
+                            <button type="submit" class="resume-btn resume-btn--ghost">Удалить</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                    {% for skill in other_skills %}
+                    <div class="skill-row">
+                        <span class="hint-chip">{{ skill.name }}</span>
+                        <form method="post" action="{{ url_for('toggle_worker_skill', skill_id=skill.id) }}">
+                            <button type="submit" class="resume-btn resume-btn--ghost">Сделать ключевым</button>
+                        </form>
+                        <form method="post" action="{{ url_for('delete_worker_skill', skill_id=skill.id) }}">
+                            <button type="submit" class="resume-btn resume-btn--ghost">Удалить</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="resume-card__text" style="margin-top: 10px;">Добавьте несколько навыков и пометьте ключевые — так вас быстрее заметят.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка: образование -->
+<div class="tj-modal" id="edu-modal">
+    <div class="tj-modal__dialog glass-card">
+        <div class="tj-modal__header">
+            <div class="tj-modal__title">Добавить учебное заведение</div>
+            <button class="tj-modal__close" type="button" data-modal-close>×</button>
+        </div>
+        <div class="tj-modal__body">
+            <form method="post" action="{{ url_for('save_worker_education') }}" class="profile-form">
+                <div class="form-row">
+                    <div class="field">
+                        <label class="profile-label">Уровень</label>
+                        <select name="level" class="profile-input" style="cursor: pointer;">
+                            <option value="">Выберите уровень</option>
+                            {% for level in education_levels %}
+                            <option value="{{ level }}">{{ level }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="profile-label">Учебное заведение</label>
+                        <input name="institution" class="profile-input" placeholder="Название вуза/колледжа">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="field">
+                        <label class="profile-label">Факультет</label>
+                        <input name="faculty" class="profile-input" placeholder="Факультет">
+                    </div>
+                    <div class="field">
+                        <label class="profile-label">Специализация</label>
+                        <input name="specialization" class="profile-input" placeholder="Специализация">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="field">
+                        <label class="profile-label">Год окончания</label>
+                        <input name="graduation_year" type="number" min="1900" max="2099" class="profile-input" placeholder="2019">
+                    </div>
+                </div>
+                <div class="resume-actions" style="margin-top: 10px;">
+                    <button type="submit" class="resume-btn resume-btn--primary">Сохранить</button>
+                    <button type="button" class="resume-btn resume-btn--ghost" data-modal-close>Закрыть</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка: опыт -->
+<div class="tj-modal" id="exp-modal">
+    <div class="tj-modal__dialog glass-card">
+        <div class="tj-modal__header">
+            <div class="tj-modal__title">Добавить опыт</div>
+            <button class="tj-modal__close" type="button" data-modal-close>×</button>
+        </div>
+        <div class="tj-modal__body">
+            <form method="post" action="{{ url_for('save_worker_experience') }}" class="profile-form">
+                <div class="form-row">
+                    <div class="field">
+                        <label class="profile-label">Компания</label>
+                        <input name="company" class="profile-input" placeholder='Например, "Ромашка"'>
+                    </div>
+                    <div class="field">
+                        <label class="profile-label">Должность</label>
+                        <input name="title" class="profile-input" placeholder="Ваша роль">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="profile-label">Обязанности / достижения</label>
+                    <textarea name="duties" rows="3" class="profile-input profile-input--textarea" placeholder="Кратко: задачи, инструменты"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="field">
+                        <label class="profile-label">Начало</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <select name="start_month" class="profile-input" style="cursor: pointer;">
+                                <option value="">Месяц</option>
+                                {% for value, title in months %}
+                                <option value="{{ value }}">{{ title }}</option>
+                                {% endfor %}
+                            </select>
+                            <input name="start_year" type="number" min="1900" max="2099" class="profile-input" placeholder="2020">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="profile-label">Окончание</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <select name="end_month" class="profile-input" style="cursor: pointer;">
+                                <option value="">Месяц</option>
+                                {% for value, title in months %}
+                                <option value="{{ value }}">{{ title }}</option>
+                                {% endfor %}
+                            </select>
+                            <input name="end_year" type="number" min="1900" max="2099" class="profile-input" placeholder="2024">
+                        </div>
+                        <label class="toggle-row" style="margin-top: 6px; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="is_current" style="width: 16px; height: 16px;">
+                            <span>Работаю сейчас</span>
+                            <span class="hint-chip">Текущее место</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="resume-actions" style="margin-top: 10px;">
+                    <button type="submit" class="resume-btn resume-btn--primary">Сохранить</button>
+                    <button type="button" class="resume-btn resume-btn--ghost" data-modal-close>Закрыть</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка: навык -->
+<div class="tj-modal" id="skill-modal">
+    <div class="tj-modal__dialog glass-card">
+        <div class="tj-modal__header">
+            <div class="tj-modal__title">Добавить навык</div>
+            <button class="tj-modal__close" type="button" data-modal-close>×</button>
+        </div>
+        <div class="tj-modal__body">
+            <form method="post" action="{{ url_for('add_worker_skill') }}" class="profile-form">
+                <div class="form-row">
+                    <div class="field">
+                        <label class="profile-label">Название навыка</label>
+                        <input name="skill_name" class="profile-input" placeholder="Adobe Photoshop">
+                    </div>
+                    <div class="field">
+                        <label class="profile-label">Сделать ключевым</label>
+                        <label class="toggle-row" style="margin-top: 8px; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="is_key" style="width: 16px; height: 16px;"> <span>Да</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="resume-actions" style="margin-top: 10px;">
+                    <button type="submit" class="resume-btn resume-btn--primary">Сохранить</button>
+                    <button type="button" class="resume-btn resume-btn--ghost" data-modal-close>Закрыть</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const body = document.body;
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        modal.classList.add('is-open');
+        body.style.overflow = 'hidden';
+    }
+    function closeModal(modal) {
+        modal.classList.remove('is-open');
+        body.style.overflow = '';
+    }
+    document.querySelectorAll('[data-modal-open]').forEach(btn => {
+        btn.addEventListener('click', () => openModal(btn.dataset.modalOpen));
+    });
+    document.querySelectorAll('.tj-modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal(modal);
+        });
+    });
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('[data-modal-close]')) {
+            const modal = e.target.closest('.tj-modal');
+            if (modal) closeModal(modal);
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.tj-modal.is-open').forEach(closeModal);
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -2,117 +2,100 @@
 {% block title %}{{ job.title }} — TimeJobs{% endblock %}
 
 {% block content %}
-<div class="profile-page" style="padding-top: 110px;">
-    <div class="profile-inner">
+{% set exp_label = {
+    'no_exp':'Без опыта',
+    '1_3':'От 1 до 3 лет',
+    '3_6':'От 3 до 6 лет',
+    '6_plus':'Более 6 лет'
+}.get(job.experience_level, 'Не указано') %}
+{% set wf_map = {'office':'На месте работодателя','remote':'Удалённо','hybrid':'Гибрид','travel':'Разъездной'} %}
 
-        <div class="glass-card" style="padding: 26px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06);">
+<div class="hh-detail">
+    <div class="hh-detail-main glass-card">
+        <div class="hh-card__meta">Сейчас эту вакансию смотрят 12 человек</div>
+        <h1 class="hh-card__title" style="font-size: 26px;">{{ job.title }}</h1>
+        <div class="hh-card__salary">
+            {% if job.wage %}
+                {{ '%.0f'|format(job.wage) }} ₽ {% if job.pay_type == 'hourly' %}за час{% else %}за смену{% endif %}
+            {% else %}
+                Оплата не указана
+            {% endif %}
+        </div>
+        <ul class="hh-detail-list">
+            <li>Выплаты: {% if job.pay_type == 'hourly' %}ежедневно{% else %}за смену{% endif %}</li>
+            <li>Опыт работы: {{ exp_label }}</li>
+            {% if job.duration_days %}<li>Длительность: {{ job.duration_days }} дн.</li>{% endif %}
+            <li>График: 6/1 и другие варианты</li>
+            {% if job.work_format %}
+                <li>Формат работы:
+                    {% for wf in (job.work_format or '').split(',') %}
+                        {{ wf_map.get(wf.strip(), wf.strip()) }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </li>
+            {% endif %}
+        </ul>
 
-            <!-- Заголовок -->
-            <h1 class="text-18-600" style="font-size: 26px; margin-bottom: 8px;">
-                {{ job.title }}
-            </h1>
-
-            <!-- Основная информация -->
-            <p class="profile-text" style="font-size: 14px; color: hsl(var(--twc-grey-400));">
-                {{ job.city or 'Город не указан' }} •
-                {{ job.specialization or 'Специализация не указана' }} •
-                {% if job.pay_type == 'hourly' %}почасовая{% else %}за смену{% endif %} •
-                срок {{ job.duration_days or 1 }} дн.
-            </p>
-
-            <!-- Цена -->
-            <div style="margin-top: 14px; font-size: 20px; font-weight: 600; color: var(--tj-accent);">
-                {{ '%.0f'|format(job.wage or 0) }} ₽
-                <span style="font-size: 12px; color: hsl(var(--twc-grey-500));">
-                    {% if job.pay_type == 'hourly' %}/ час{% else %}/ смена{% endif %}
-                </span>
-            </div>
-
-            <!-- Работодатель -->
-            <p style="font-size: 13px; color: hsl(var(--twc-grey-400)); margin-top: 4px;">
-                Работодатель: <span style="color: white;">{{ job.employer.name }}</span>
-            </p>
-
-            <hr style="margin: 22px 0; border-color: rgba(255,255,255,0.06);">
-
-            <!-- Описание -->
-            <h2 class="text-18-600" style="font-size: 20px; margin-bottom: 6px;">Описание</h2>
-
-            <p style="font-size: 14px; color: hsl(var(--twc-grey-200)); white-space: pre-line;">
-                {{ job.description or 'Описание не указано' }}
-            </p>
-
-            <!-- Нижняя часть -->
-            <div style="margin-top: 26px; display: flex; flex-direction: column; gap: 12px;">
-
-                <p style="font-size: 12px; color: hsl(var(--twc-grey-500));">
-                    Опубликовано: {{ job.created_at.strftime('%d.%m.%Y') }}
-                </p>
-
-                {% if current_user.is_authenticated and current_user.role == 'worker' %}
-
-					{% if not current_user.phone %}
-						<a href="{{ url_for('profile') }}"
-						   class="px-5 py-2 rounded-lg bg-red-500 text-white font-semibold text-sm inline-flex">
-							Укажите телефон в профиле, чтобы откликнуться
-						</a>
-
-					{% else %}
-						<form method="post" action="{{ url_for('apply', job_id=job.id) }}"
-							  style="display:flex; align-items:center; gap:10px; width:100%; margin-top:16px; flex-wrap:wrap;">
-
-							<!-- Поле ввода (растягивается, но не ломает верстку на мобайле) -->
-							<input type="text" name="note"
-								   placeholder="Короткое сообщение работодателю"
-								   style="
-									   flex: 1 1 320px;      
-									   min-width: 0;        
-									   padding: 12px 14px;
-									   border-radius: 14px;
-									   background: rgba(255,255,255,0.04);
-									   border: 1px solid rgba(255,255,255,0.08);
-									   color: white;
-									   font-size: 14px;
-									   text-align: center; 
-								   ">
-
-							<!-- Кнопка (фиксированный размер, справа от поля) -->
-							<button type="submit"
-									class="ra-button preset primary"
-									style="
-										padding: 12px 26px;
-										border-radius: 14px;
-										font-size: 14px;
-										font-weight: 600;
-										white-space: nowrap;
-										flex: 0 0 auto;
-									">
-								Откликнуться
-							</button>
-						</form>
-
-
-					{% endif %}
-
-				{% elif not current_user.is_authenticated %}
-					<a href="{{ url_for('login') }}"
-					   class="px-5 py-2 rounded-lg bg-green-500 text-black font-semibold hover:bg-green-400 text-sm inline-flex">
-						Войдите, чтобы откликнуться
-					</a>
-
-
-                {% elif not current_user.is_authenticated %}
-                <a href="{{ url_for('login') }}"
-                   class="ra-button preset primary"
-                   style="padding: 10px 18px; display: inline-flex;">
-                    Войти, чтобы откликнуться
-                </a>
-                {% endif %}
-
-            </div>
-
+        <div class="hh-cta" style="margin: 12px 0 4px;">
+            {% if current_user.is_authenticated and current_user.role == 'worker' %}
+                <form method="post" action="{{ url_for('apply', job_id=job.id) }}" style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button type="submit" class="hh-button primary">Откликнуться</button>
+                </form>
+            {% elif not current_user.is_authenticated %}
+                <a href="{{ url_for('login') }}" class="hh-button primary">Войти и откликнуться</a>
+            {% endif %}
         </div>
 
+        <div class="hh-detail-description">
+            <h3>Описание</h3>
+            <p class="profile-text" style="white-space: pre-line; color: hsl(var(--twc-grey-200)); margin-top: 6px;">
+                {{ job.description or 'Описание не указано' }}
+            </p>
+        </div>
+
+        <div class="hh-detail-qa">
+            <h3>Задайте вопрос работодателю</h3>
+            <div class="hh-tag-pills">
+                <span class="hh-tag">Где находится место работы?</span>
+                <span class="hh-tag">Какой график работы?</span>
+                <span class="hh-tag">Вакансия открыта?</span>
+                <span class="hh-tag">Как связаться?</span>
+            </div>
+        </div>
+
+        <div class="hh-detail-location">
+            <h3>Где предстоит работать</h3>
+            <p class="profile-text" style="margin: 6px 0 12px; color: hsl(var(--twc-grey-200));">
+                {{ job.city or 'Город не указан' }}
+                {% if job.specialization %} • {{ job.specialization }}{% endif %}
+            </p>
+            <div class="map-placeholder"></div>
+            <p class="profile-text" style="color: hsl(var(--twc-grey-400)); margin-top: 6px;">
+                Вакансия опубликована {{ job.created_at.strftime('%d %B %Y') if job.created_at else '' }}
+            </p>
+        </div>
     </div>
+
+    <aside class="hh-detail-side">
+        <div class="glass-card hh-side-card">
+            <div class="hh-company">
+                <div>
+                    <p class="hh-company__name">{{ job.employer.name if job.employer else 'Компания' }}</p>
+                    <div class="hh-rating">
+                        <span class="hh-star">★</span> 4.5 • 32 отзыва
+                    </div>
+                </div>
+                <div class="hh-logo"></div>
+            </div>
+            <div class="hh-tag-pills">
+                <span class="hh-tag">Открытый</span>
+                <span class="hh-tag">Показывает отзывы</span>
+            </div>
+        </div>
+
+        <div class="glass-card hh-side-card">
+            <h3 style="margin-bottom: 8px;">Похожие вакансии</h3>
+            <p class="profile-text" style="color: hsl(var(--twc-grey-400));">Скоро здесь будут релевантные предложения.</p>
+        </div>
+    </aside>
 </div>
 {% endblock %}

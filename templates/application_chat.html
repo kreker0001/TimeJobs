@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Чат по отклику на {{ job.title if job else 'вакансию' }}{% endblock %}
+
+{% block content %}
+<div class="chat-shell">
+    <div class="chat-inner">
+        <header class="chat-header glass-card">
+            <div>
+                <p class="chat-eyebrow">Чат по отклику</p>
+                <h1>{{ job.title if job else 'Вакансия удалена' }}</h1>
+                <p class="chat-subtitle">
+                    Общайтесь с собеседником напрямую, чтобы договориться о следующем шаге.
+                </p>
+                <div class="chat-chips">
+                    <span class="chat-chip">Статус: {{ status_label }}</span>
+                    <span class="chat-chip">Отклик от {{ app_obj.created_at.strftime('%d.%m.%Y') if app_obj.created_at else 'неизвестной даты' }}</span>
+                </div>
+            </div>
+            <div class="chat-header__actions">
+                <a class="chat-btn ghost" href="{{ back_url }}">Назад к откликам</a>
+                {% if job %}
+                <a class="chat-btn" href="{{ url_for('vacancy_detail', job_id=job.id) }}">Карточка вакансии</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <div class="chat-window glass-card">
+            <div class="chat-participants">
+                {% set worker_name = worker.name if worker else 'Соискатель' %}
+                {% set worker_avatar = (worker.avatar_url or (worker.avatar if worker else None)) if worker else None %}
+                {% set employer_name = employer.name if employer else 'Работодатель' %}
+                {% set employer_avatar = (employer.avatar_url or (employer.avatar if employer else None)) if employer else None %}
+                <div class="chat-person">
+                    <img src="{{ worker_avatar or default_avatar(worker_name) }}" alt="{{ worker_name }}">
+                    <div>
+                        <div class="chat-person__role">Соискатель</div>
+                        <div class="chat-person__name">{{ worker_name }}</div>
+                    </div>
+                </div>
+                <div class="chat-person chat-person--muted">
+                    <div class="chat-person__divider" aria-hidden="true"></div>
+                </div>
+                <div class="chat-person">
+                    <img src="{{ employer_avatar or default_avatar(employer_name) }}" alt="{{ employer_name }}">
+                    <div>
+                        <div class="chat-person__role">Работодатель</div>
+                        <div class="chat-person__name">{{ employer_name }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chat">
+                {% for msg in messages %}
+                    {% set mine = msg.sender_id == current_user.id %}
+                    <div class="chat-bubble{% if mine %} chat-bubble--mine{% endif %}" id="{% if loop.last %}last{% endif %}">
+                        <div class="chat-bubble__meta">
+                            <span class="chat-author">
+                                {% if msg.is_system %}Система{% elif mine %}Вы{% else %}{{ msg.sender.name or 'Собеседник' }}{% endif %}
+                            </span>
+                            <span class="chat-time">{{ msg.created_at.strftime('%d.%m.%Y %H:%M') if msg.created_at else '' }}</span>
+                        </div>
+                        <div class="chat-bubble__text">{{ (msg.text or '') | e | replace('\n', '<br>') | safe }}</div>
+                    </div>
+                {% else %}
+                    <div class="chat-empty">Пока нет сообщений — напишите первое, чтобы начать диалог.</div>
+                {% endfor %}
+            </div>
+
+            <div class="chat-actions">
+                {% if is_employer and app_obj.status == 'awaiting_approval' %}
+                    <form method="post" action="{{ url_for('update_application_status', app_id=app_obj.id) }}" class="chat-offer">
+                        <input type="hidden" name="action" value="start_work">
+                        <input type="hidden" name="next" value="{{ url_for('application_chat', app_id=app_obj.id) }}">
+                        <label for="work-units">Укажите смены/часы</label>
+                        <input id="work-units" type="number" name="units" min="1" required>
+                        <button type="submit" class="chat-submit">Отправить в работу</button>
+                    </form>
+                {% elif is_worker and app_obj.status == 'work_offer' %}
+                    <div class="chat-offer chat-offer--row">
+                        <div>Предложение: {{ app_obj.work_units or '' }} × {{ job.wage }} = {{ app_obj.frozen_amount or 0 }}</div>
+                        <form method="post" action="{{ url_for('update_application_status', app_id=app_obj.id) }}">
+                            <input type="hidden" name="action" value="worker_accept">
+                            <input type="hidden" name="next" value="{{ url_for('application_chat', app_id=app_obj.id) }}">
+                            <button type="submit" class="chat-submit">Принять</button>
+                        </form>
+                        <form method="post" action="{{ url_for('update_application_status', app_id=app_obj.id) }}">
+                            <input type="hidden" name="action" value="worker_decline">
+                            <input type="hidden" name="next" value="{{ url_for('application_chat', app_id=app_obj.id) }}">
+                            <button type="submit" class="chat-btn ghost">Отклонить</button>
+                        </form>
+                    </div>
+                {% elif is_employer and app_obj.status == 'in_work' %}
+                    <form method="post" action="{{ url_for('update_application_status', app_id=app_obj.id) }}" class="chat-offer chat-offer--row">
+                        <input type="hidden" name="action" value="complete_work">
+                        <input type="hidden" name="next" value="{{ url_for('application_chat', app_id=app_obj.id) }}">
+                        <div>Заморожено к выплате: {{ app_obj.frozen_amount or 0 }}</div>
+                        <button type="submit" class="chat-submit">Подтвердить выполнение</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <form class="chat-form" method="post">
+                <label class="chat-form__label" for="chat-message">Новое сообщение</label>
+                <textarea id="chat-message"
+                          name="message"
+                          rows="3"
+                          placeholder="Напишите сообщение работодателю или кандидату"
+                          required></textarea>
+                <div class="chat-form__actions">
+                    <a class="chat-link" href="{{ back_url }}">Вернуться назад</a>
+                    <button type="submit" class="chat-submit">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

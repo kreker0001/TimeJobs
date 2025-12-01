@@ -1,43 +1,226 @@
 {% extends "base.html" %}
-{% block title %}Отклики — {{ job.title }}{% endblock %}
+{% block title %}Отклики на вакансию {{ job.title }}{% endblock %}
 
 {% block content %}
-<div class="profile-page">
+<div class="applications-shell bg-dot-pattern-2">
     <div class="profile-inner">
 
-        <h1 class="text-18-600" style="font-size: 24px; margin-bottom: 20px;">
-            Отклики на вакансию "{{ job.title }}"
-        </h1>
+        <div class="apps-hero glass-card">
+            <div>
+                <p class="eyebrow">Отклики соискателей</p>
+                <h1 class="apps-hero__title">Вакансия: {{ job.title }}</h1>
+                <p class="apps-hero__meta">
+                    {{ job.city or 'Город не указан' }}{% if job.specialization %} · {{ job.specialization }}{% endif %}
+                </p>
+            </div>
+            <div class="apps-hero__chips">
+                <span class="apps-chip">Откликов: {{ status_metrics.total }}</span>
+                <span class="apps-chip apps-chip--muted">На согласовании: {{ status_metrics.approval }}</span>
+                <span class="apps-chip apps-chip--success">В работе: {{ status_metrics.in_work }}</span>
+                <span class="apps-chip apps-chip--danger">Отклонено: {{ status_metrics.rejected }}</span>
+            </div>
+        </div>
+
+        <form method="get"
+              action="{{ url_for('view_job_applications', job_id=job.id) }}"
+              class="apps-toolbar glass-card">
+            <div class="apps-toolbar__left">
+                <div class="apps-search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.71.71l.27.28v.79l5 4.99L20.49 19zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z"/>
+                    </svg>
+                    <input type="text"
+                           name="search"
+                           value="{{ search or '' }}"
+                           placeholder="Поиск по имени, телефону">
+                </div>
+            </div>
+            <div class="apps-toolbar__right">
+                <div class="apps-pills">
+                    <button type="submit"
+                            name="status"
+                            value="all"
+                            class="apps-pill{% if status_filter == 'all' %} apps-pill--active{% endif %}">
+                        Все
+                    </button>
+                    <button type="submit"
+                            name="status"
+                            value="applied"
+                            class="apps-pill{% if status_filter == 'applied' %} apps-pill--active{% endif %}">
+                        Новые
+                    </button>
+                    <button type="submit"
+                            name="status"
+                            value="awaiting_approval"
+                            class="apps-pill{% if status_filter == 'awaiting_approval' %} apps-pill--active{% endif %}">
+                        На согласовании
+                    </button>
+                    <button type="submit"
+                            name="status"
+                            value="work_offer"
+                            class="apps-pill{% if status_filter == 'work_offer' %} apps-pill--active{% endif %}">
+                        Предложение
+                    </button>
+                    <button type="submit"
+                            name="status"
+                            value="in_work"
+                            class="apps-pill{% if status_filter == 'in_work' %} apps-pill--active{% endif %}">
+                        В работе
+                    </button>
+                    <button type="submit"
+                            name="status"
+                            value="rejected"
+                            class="apps-pill{% if status_filter == 'rejected' %} apps-pill--active{% endif %}">
+                        Отклонено
+                    </button>
+                </div>
+            </div>
+        </form>
 
         {% if apps %}
-            <div style="display:flex; flex-direction:column; gap:16px;">
-                {% for a in apps %}
-                <div class="glass-card" style="padding:20px; border-radius:18px;">
-                    <div class="text-18-600" style="font-size:16px;">
-                        {{ a.name }}
-                    </div>
-                    <div class="profile-text" style="color:hsl(var(--twc-grey-400)); font-size:13px;">
-                        Телефон: {{ a.phone or "нет" }}<br>
-                        Email: {{ a.email }}
+        <div class="apps-list">
+            {% for a in apps %}
+                {% set worker = a.worker %}
+                {% set worker_name = worker.name if worker else 'Соискатель не найден' %}
+                {% set avatar_src = worker.avatar_url or (worker.avatar if worker and worker.avatar else None) or default_avatar(worker_name) %}
+                {% set rating_value = worker.rating if worker and worker.rating is not none else '-' %}
+                {% set status_label = {
+                    'applied':'Новый',
+                    'awaiting_approval':'На согласовании',
+                    'work_offer':'Предложение',
+                    'in_work':'В работе',
+                    'completed':'Завершено',
+                    'rejected':'Отклонено'
+                }.get(a.status, 'Неизвестно') %}
+                {% set status_class = {
+                    'applied':'warning',
+                    'awaiting_approval':'warning',
+                    'work_offer':'info',
+                    'in_work':'success',
+                    'completed':'muted',
+                    'rejected':'danger'
+                }.get(a.status, 'muted') %}
+                {% set next_url = request.full_path %}
+                <article class="apps-card glass-card">
+                    <div class="apps-card__header">
+                        <div class="apps-avatar">
+                            <img src="{{ avatar_src }}" alt="{{ worker_name }}">
+                        </div>
+                        <div class="apps-card__headline">
+                            <div class="apps-card__title">{{ worker_name }}</div>
+                            <div class="apps-card__meta">
+                                Отклик от {{ a.created_at.strftime('%d.%m.%Y') if a.created_at else 'неизвестно' }}
+                                {% if worker and worker.exp_years is not none %}
+                                    · опыт {{ worker.exp_years }} {% if worker.exp_years|int == 1 %}год{% elif 2 <= worker.exp_years|int <= 4 %}года{% else %}лет{% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="apps-card__meta">
+                                Баланс соискателя: {{ worker.deposit or 0 }} ₽
+                            </div>
+                            <div class="apps-card__status-row">
+                                <span class="apps-status apps-status--{{ status_class }}">
+                                    {{ status_label }}{% if a.waiting_days is defined %} · {{ a.waiting_days }} дн.{% endif %}
+                                </span>
+                                <span class="apps-status apps-status--muted">Вакансия: {{ job.title }}</span>
+                            </div>
+                        </div>
+                        <div class="apps-card__controls">
+                            <span class="apps-chip apps-chip--inline">{{ rating_value }} ★</span>
+                        </div>
                     </div>
 
-                    {% if a.note %}
-                    <div style="margin-top:8px; font-size:13px; color:hsl(var(--twc-grey-200));">
-                        Сообщение: "{{ a.note }}"
+                    <div class="apps-info-grid">
+                        <div class="apps-info">
+                            <div class="apps-info__label">Контакты</div>
+                            <div class="apps-info__value apps-info__value--chips">
+                                {% if worker and worker.phone %}<span class="apps-chip apps-chip--ghost">{{ worker.phone }}</span>{% endif %}
+                                {% if worker %}<span class="apps-chip apps-chip--ghost">{{ worker.email }}</span>{% endif %}
+                            </div>
+                        </div>
+                        <div class="apps-info">
+                            <div class="apps-info__label">Образование</div>
+                            <div class="apps-info__value">{{ worker.education if worker and worker.education else 'Не указано' }}</div>
+                        </div>
+                        <div class="apps-info">
+                            <div class="apps-info__label">Заметка кандидата</div>
+                            <div class="apps-info__value">{{ a.note or 'Без примечаний' }}</div>
+                        </div>
                     </div>
-                    {% endif %}
 
-                    <div style="font-size:12px; margin-top:10px; color:hsl(var(--twc-grey-500));">
-                        Отправлено: {{ a.created_at }}
+                    <div class="apps-chat chat-preview">
+                        <div class="chat-preview__content">
+                            <div class="chat-preview__label">Чат с кандидатом</div>
+                            {% set chat_info = chat_meta.get(a.id) %}
+                            {% set last_text = (chat_info.last.text if chat_info and chat_info.last else '') | replace('\n', ' ') %}
+                            {% if chat_info %}
+                                <div class="chat-preview__text">
+                                    <span class="chat-preview__count">{{ chat_info.count }}</span>
+                                    <span class="chat-preview__snippet">
+                                        <strong>{{ 'Вы' if chat_info.last.sender_id == current_user.id else worker_name }}</strong>:
+                                        {{ last_text[:140] }}{% if last_text|length > 140 %}…{% endif %}
+                                    </span>
+                                </div>
+                            {% else %}
+                                <div class="chat-preview__text chat-preview__text--muted">Чат пока пустой</div>
+                            {% endif %}
+                        </div>
+                        {% set chat_allowed = a.status in ['awaiting_approval','work_offer','in_work','completed'] %}
+                        {% if chat_allowed %}
+                            <a class="apps-btn apps-btn--ghost" href="{{ url_for('application_chat', app_id=a.id) }}">Открыть чат</a>
+                        {% else %}
+                            <span class="apps-btn apps-btn--ghost" aria-disabled="true" style="opacity:0.6;cursor:not-allowed;">Чат после согласования</span>
+                        {% endif %}
                     </div>
-                </div>
-                {% endfor %}
-            </div>
 
+                    <div class="apps-card__footer">
+                        <div class="apps-actions">
+                            {% if a.status == 'applied' %}
+                                <form method="post"
+                                      action="{{ url_for('update_application_status', app_id=a.id) }}">
+                                    <input type="hidden" name="action" value="send_to_approval">
+                                    <input type="hidden" name="next" value="{{ next_url }}">
+                                    <button type="submit" class="apps-btn apps-btn--primary">Отправить на согласование</button>
+                                </form>
+                            {% endif %}
+                            <form method="post"
+                                  action="{{ url_for('update_application_status', app_id=a.id) }}">
+                                <input type="hidden" name="action" value="reject">
+                                <input type="hidden" name="next" value="{{ next_url }}">
+                                <button type="submit" class="apps-btn apps-btn--ghost">Отклонить</button>
+                            </form>
+                        </div>
+                        <div class="apps-icons">
+                            {% if worker and worker.phone %}
+                            <a class="apps-icon-btn" aria-label="Позвонить" href="tel:{{ worker.phone }}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fill="currentColor" d="M4 4h16v12H5.17L4 17.17zm6 10h4v-2h-4zm-4-6v2h12V8z"/>
+                                </svg>
+                            </a>
+                            {% endif %}
+                            {% if worker %}
+                            <a class="apps-icon-btn" aria-label="Написать" href="mailto:{{ worker.email }}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fill="currentColor" d="M21 15.46v3a2 2 0 0 1-2.18 2A19.86 19.86 0 0 1 3.54 5.18 2 2 0 0 1 5.5 3h3a1 1 0 0 1 1 .78 12.69 12.69 0 0 0 .7 2.22 1 1 0 0 1-.23 1L8.91 8.91a16 16 0 0 0 6.18 6.18l1.9-1.06a1 1 0 0 1 1-.05 12.69 12.69 0 0 0 2.22.7 1 1 0 0 1 .79 1.08Z"/>
+                                </svg>
+                            </a>
+                            {% endif %}
+                            <a class="apps-icon-btn" aria-label="Открыть вакансию" href="{{ url_for('vacancy_detail', job_id=job.id) }}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fill="currentColor" d="M12 21.35 10.55 20C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3a4.9 4.9 0 0 1 4.5 3 4.9 4.9 0 0 1 4.5-3A5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54Z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
         {% else %}
-            <div class="glass-card" style="padding:20px; border-radius:18px;">
-                Пока никто не откликнулся.
-            </div>
+        <div class="glass-card apps-empty">
+            <div class="apps-card__title">Откликов нет</div>
+            <p class="profile-text" style="color: hsl(var(--twc-grey-400)); margin-top: 6px;">
+                Расскажите о вакансии — поделитесь ссылкой или повысьте тариф, чтобы получить больше откликов.
+            </p>
+        </div>
         {% endif %}
 
     </div>

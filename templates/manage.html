@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block title %}
 {% if current_user.role == 'moderator' %}
-Модерация вакансий — Time Jobs
+Управление вакансиями — Time Jobs
 {% else %}
-Мои вакансии и отклики — Time Jobs
+Мои вакансии — Time Jobs
 {% endif %}
 {% endblock %}
 
@@ -11,39 +11,164 @@
 <div class="profile-page">
     <div class="profile-inner">
 
-        <!-- Заголовок страницы -->
+        {% if current_user.role == 'employer' %}
+
+        <div class="employer-hero glass-card">
+            <div>
+                <p class="eyebrow">Кабинет работодателя</p>
+                <h1 class="text-18-600" style="font-size: 26px;">Мои вакансии</h1>
+                <p class="profile-text" style="color: hsl(var(--twc-grey-400));">
+                    Следите за откликами и поднимайте вакансии, чтобы оставаться в топе выдачи.
+                </p>
+            </div>
+        </div>
+
+        {% if status_tabs %}
+        <div class="employer-tabs glass-card">
+            {% for tab in status_tabs %}
+            <a href="{{ url_for('manage', tab=tab.key, search=search) }}"
+               class="employer-tab{% if active_tab == tab.key %} is-active{% endif %}">
+                <span>{{ tab.label }}</span>
+                <span class="employer-tab__counter">{{ tab.count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="employer-summary">
+            <div class="employer-callout glass-card">
+                <div class="callout-dot"></div>
+                <div>
+                    <p class="text-18-600" style="font-size: 15px;">Отвечайте на отклики в течение 24 часов</p>
+                    <p class="profile-text" style="color: hsl(var(--twc-grey-400));">
+                        Быстрая обратная связь помогает держать вакансию выше в поиске.
+                    </p>
+                </div>
+            </div>
+            <div class="employer-metric glass-card">
+                <div class="metric-value">100%</div>
+                <div class="metric-label">Индекс внимательности</div>
+            </div>
+        </div>
+
+        <form method="get" action="{{ url_for('manage') }}" class="employer-toolbar glass-card">
+            <input type="hidden" name="tab" value="{{ active_tab }}">
+            <div class="employer-search">
+                <input type="text"
+                       name="search"
+                       value="{{ search or '' }}"
+                       placeholder="Поиск по названию, городу или специализации"
+                       class="profile-input">
+            </div>
+            <div class="employer-toolbar__actions">
+                <a href="{{ url_for('post_job') }}" class="ra-button preset primary">Новая вакансия</a>
+            </div>
+        </form>
+
+        {% set tab_jobs = status_groups.get(active_tab, []) if status_groups and active_tab else jobs %}
+        <div class="employer-table glass-card">
+            <div class="employer-table__head">
+                <div class="col-title">Вакансия</div>
+                <div class="col-city">Регион</div>
+                <div class="col-num">Просмотры</div>
+                <div class="col-num">Отклики</div>
+                <div class="col-num">В работе</div>
+                <div class="col-num">Новые</div>
+                <div class="col-expire">Истекает</div>
+                <div class="col-actions"></div>
+            </div>
+
+            {% if tab_jobs %}
+                {% for job in tab_jobs %}
+                <div class="employer-row">
+                    <div class="col-title">
+                        <div class="employer-row__title">{{ job.title }}</div>
+                        <div class="employer-row__meta">
+                            {{ job.city or 'Город не указан' }}
+                            {% if job.specialization %} • {{ job.specialization }}{% endif %}
+                        </div>
+                        <div class="employer-row__tags">
+                            <span class="employer-pill">{{ 'Почасовая' if job.pay_type == 'hourly' else 'Смена' }}</span>
+                            <span class="employer-pill">{{ job.duration_days or 1 }} дн.</span>
+                            {% if job.status == 'approved' %}
+                                <span class="employer-status success">Активна</span>
+                            {% elif job.status == 'pending' %}
+                                <span class="employer-status waiting">На модерации</span>
+                            {% elif job.status == 'draft' %}
+                                <span class="employer-status muted">Черновик</span>
+                            {% else %}
+                                <span class="employer-status muted">Закрыта</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-city">{{ job.city or '—' }}</div>
+                    <div class="col-num">{{ job.view_count or 0 }}</div>
+                    <div class="col-num">{{ job.responses_total }}</div>
+                    <div class="col-num">{{ job.responses_in_work }}</div>
+                    <div class="col-num">{{ job.responses_new }}</div>
+                    <div class="col-expire">
+                        {% if job.expires_at %}{{ job.expires_at.strftime('%d.%m') }}{% else %}—{% endif %}
+                    </div>
+                    <div class="col-actions" style="gap:6px; flex-direction:column; align-items:flex-end;">
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+                            <a href="{{ url_for('vacancy_detail', job_id=job.id) }}"
+                               class="employer-link">Карточка</a>
+                            {% if job.status != 'draft' %}
+                            <a href="{{ url_for('view_job_applications', job_id=job.id) }}"
+                               class="employer-link">Отклики</a>
+                            {% endif %}
+                        </div>
+                        {% if job.status == 'draft' %}
+                        <form method="post" action="{{ url_for('change_job_status', job_id=job.id, action='publish') }}">
+                            <button class="ra-button preset primary" style="padding: 6px 12px; font-size: 12px;">Опубликовать</button>
+                        </form>
+                        {% elif job.status == 'pending' %}
+                        <form method="post" action="{{ url_for('change_job_status', job_id=job.id, action='draft') }}">
+                            <button class="ra-button preset default" style="padding: 6px 12px; font-size: 12px;">В черновики</button>
+                        </form>
+                        {% elif job.status == 'approved' %}
+                        <form method="post" action="{{ url_for('change_job_status', job_id=job.id, action='close') }}">
+                            <button class="ra-button preset default" style="padding: 6px 12px; font-size: 12px; background: rgba(255,0,0,0.2); color: #ffbaba;">Закрыть</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="employer-empty">
+                    <p class="text-18-600">Пока здесь пусто</p>
+                    <p class="profile-text" style="color: hsl(var(--twc-grey-400));">
+                        Создайте вакансию или выберите другой фильтр.
+                    </p>
+                    <a href="{{ url_for('post_job') }}" class="ra-button preset primary">Добавить вакансию</a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% else %}
+
         <div class="profile-hero">
             <div class="profile-hero-left">
                 <div>
                     <h1 class="text-18-600" style="font-size: 24px;">
-                        {% if current_user.role == 'moderator' %}
-                        Модерация вакансий
-                        {% else %}
-                        Мои вакансии и отклики
-                        {% endif %}
+                        Управление вакансиями
                     </h1>
 
                     <p class="profile-text" style="font-size: 13px; color: hsl(var(--twc-grey-400));">
-                        {% if current_user.role == 'moderator' %}
-                        Просмотр новых вакансий и управление статусами.
-                        {% else %}
-                        Управление вашими сменами и просмотр откликов.
-                        {% endif %}
+                        Проверяйте новые вакансии и меняйте их статус.
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Нет вакансий -->
         {% if not jobs %}
         <div class="glass-card"
              style="padding: 22px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); color: hsl(var(--twc-grey-200));">
-            Пока нет вакансий для отображения.
+            Пока нет вакансий на модерации.
         </div>
 
         {% else %}
 
-        <!-- Список вакансий -->
         <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 10px;">
             {% for job in jobs %}
             <div class="glass-card"
@@ -51,14 +176,13 @@
 
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
 
-                    <!-- Информация о вакансии -->
                     <div>
                         <div class="text-18-600" style="font-size: 18px; margin-bottom: 4px;">
                             {{ job.title }}
                         </div>
 
                         <div class="profile-text" style="font-size: 14px; color: hsl(var(--twc-grey-400));">
-                            {{ job.city or 'Город не указан' }} •
+                            {{ job.city or 'Город не указан' }} ·
                             {{ job.specialization or 'Специализация не указана' }}
                         </div>
 
@@ -72,21 +196,18 @@
                                 {% else %}
                                     color: #A8B3CF;
                                 {% endif %}
-                            ">
+                                ">
                                 {% if job.status == 'approved' %}
-                                Активная
+                                Одобрена
                                 {% endif %}
                                 {% if job.status == 'pending' %}
-                                На модерации
+                                На проверке
                                 {% endif %}
                             </span>
                         </div>
                     </div>
 
-                    <!-- Кнопки управления -->
                     <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
-
-                        {% if current_user.role == 'moderator' %}
 
                         <form method="post" action="{{ url_for('change_job_status', job_id=job.id, action='approve') }}">
                             <button class="ra-button preset primary" style="padding: 6px 14px; font-size: 12px;">
@@ -101,73 +222,15 @@
                             </button>
                         </form>
 
-                        {% elif current_user.role == 'employer' %}
-
-							<form method="post" action="{{ url_for('change_job_status', job_id=job.id, action='close') }}">
-								<button class="ra-button preset default"
-										style="padding: 6px 14px; font-size: 12px; background: rgba(255,0,0,0.2); color: #ff9c9c;">
-									Закрыть вакансию
-								</button>
-							</form>
-
-							<!-- Новая кнопка -->
-							<a href="{{ url_for('view_job_applications', job_id=job.id) }}"
-							   class="ra-button preset default"
-							   style="padding: 6px 14px; font-size: 12px;">
-								Отклики
-							</a>
-
-						{% endif %}
-
                     </div>
 
                 </div>
-
-                <!-- Отклики -->
-                {% if current_user.role == 'employer' %}
-                <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06);">
-                    <div class="text-18-600" style="font-size: 14px; margin-bottom: 8px;">Отклики</div>
-
-                    {% if job.applications %}
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        {% for app in job.applications %}
-                        <div style="display: flex; justify-content: space-between; padding-bottom: 8px;
-                                    border-bottom: 1px solid rgba(255,255,255,0.05);">
-
-                            <div>
-                                <div style="font-size: 14px; font-weight: 600; color: white;">
-                                    {{ app.worker.name }}
-                                </div>
-
-                                <div style="font-size: 12px; color: hsl(var(--twc-grey-400));">
-                                    Контакт: {{ app.worker.phone or 'не указан' }}
-                                </div>
-
-                                {% if app.note %}
-                                <div style="font-size: 12px; color: hsl(var(--twc-grey-300)); margin-top: 4px;">
-                                    "{{ app.note }}"
-                                </div>
-                                {% endif %}
-                            </div>
-
-                            <div style="font-size: 12px; color: hsl(var(--twc-grey-500));">
-                                {{ app.created_at.strftime('%d.%m.%Y') }}
-                            </div>
-
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <p style="font-size: 12px; color: hsl(var(--twc-grey-500));">
-                        Пока нет откликов.
-                    </p>
-                    {% endif %}
-                </div>
-                {% endif %}
 
             </div>
             {% endfor %}
         </div>
+
+        {% endif %}
 
         {% endif %}
     </div>

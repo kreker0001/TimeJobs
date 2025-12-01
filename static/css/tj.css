@@ -12280,17 +12280,17 @@ input[type=number][data-v-1a315d9a] {
 }
 
 .header {
-    position: absolute;
+    position: sticky;
+    top: 12px;
     display: flex;
-    width: 100%;
-    max-width: 600px;
+    align-items: center;
+    width: calc(100% - 32px);
+    max-width: 980px;
     justify-content: space-between;
-    padding: .5rem .5rem .5rem .75rem;
-    top: 2%;
-    left: 50%;
+    padding: 10px 12px;
     z-index: 10;
-    --tw-translate-x: -50%;
-    transform: translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+    margin: 0 auto 16px;
+    gap: 12px;
     border-radius: 12px;
     background-color: hsl(var(--twc-grey-1000) / .5);
     --tw-backdrop-blur: blur(10px);
@@ -12307,7 +12307,16 @@ input[type=number][data-v-1a315d9a] {
     .header .buttons[data-v-477edc33] {
         display: flex;
         align-items: center;
-        gap: .625rem
+        gap: .5rem;
+        flex: 1;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .header .buttons[data-v-477edc33] > .flex.items-center.gap-2 {
+        margin-left: auto;
+        padding-left: 8px;
     }
 
 .landing-page main[data-v-477edc33] {
@@ -12519,7 +12528,10 @@ input[type=number][data-v-869f8f0a] {
     border-color: hsl(var(--twc-grey-850) / var(--twc-grey-850-opacity, var(--tw-border-opacity)));
     display: flex;
     align-items: center;
-    gap: .625rem;
+    gap: .75rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     margin-bottom: 2.5rem;
     padding: .25rem .625rem .25rem .25rem
 }
@@ -12528,6 +12540,14 @@ input[type=number][data-v-869f8f0a] {
     border-radius: 9999px;
     background-color: hsl(var(--twc-ra-online) / .15);
     padding: .25rem
+}
+
+.section-main .offer .stats p[data-v-869f8f0a] {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
 }
 
 .section-main .offer .stats .icon svg[data-v-869f8f0a] {
@@ -12544,6 +12564,16 @@ input[type=number][data-v-869f8f0a] {
     animation: pulse-869f8f0a 2s cubic-bezier(.4,0,.6,1) infinite
 }
 
+@media (max-width: 768px) {
+    .section-main .offer .stats .icon[data-v-869f8f0a] {
+        padding: .25rem;
+    }
+
+    .section-main .offer .stats .icon svg[data-v-869f8f0a] {
+        width: 14px;
+    }
+}
+
 .middle[data-v-869f8f0a] {
     display: flex;
     flex-direction: column;
@@ -12556,7 +12586,11 @@ input[type=number][data-v-869f8f0a] {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center
+    justify-content: center;
+    width: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+    box-sizing: border-box;
 }
 
 .middle .section-projects .scroll-container[data-v-869f8f0a] {
@@ -12865,8 +12899,11 @@ input[type=number][data-v-2b8d8499] {
 .section-new_vacancies {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
+    padding-left: 16px;
+    padding-right: 16px;
+    width: 100%;
 }
 
 .ra-card {
@@ -12902,6 +12939,10 @@ input[type=number][data-v-2b8d8499] {
     border-radius: 22px;
     border: 1px solid hsl(var(--twc-grey-900) / var(--twc-grey-900-opacity, var(--tw-border-opacity)));
     padding: 20px 22px 22px;
+    width: calc(100% - 8px);
+    max-width: 1040px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
     .ra-card-jobs .ra-card-header {
@@ -13046,4 +13087,149 @@ input[type=number][data-v-2b8d8499] {
 .tj-auth__alert--error {
     background: rgba(239, 68, 68, 0.15);
     color: #fecaca;
+}
+
+/* ===== Мобильная адаптация ===== */
+@media (max-width: 1024px) {
+    .header {
+        width: calc(100% - 24px);
+        max-width: 920px;
+        padding: 10px;
+    }
+
+    .section-main[data-v-869f8f0a] {
+        padding-top: 120px;
+        gap: 64px;
+    }
+
+    .middle[data-v-869f8f0a] {
+        padding: 80px 16px 90px;
+        gap: 72px;
+    }
+
+    .middle .section-projects .comments[data-v-869f8f0a] {
+        column-count: 2;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .section-main .offer .stats p[data-v-869f8f0a]:first-of-type::after {
+        content: " вакансий";
+    }
+}
+
+@media (max-width: 768px) {
+    .section-new_vacancies {
+        padding-left: 10px;
+        padding-right: 10px;
+        align-items: stretch;
+    }
+
+    .ra-card-jobs {
+        width: calc(100% - 8px);
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .header .logo[data-v-477edc33] p {
+        display: none;
+    }
+
+    .header {
+        width: calc(100% - 20px);
+        max-width: 100%;
+        padding: 10px 10px 12px;
+    }
+
+    .header .buttons[data-v-477edc33] {
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    .header .buttons[data-v-477edc33] .ra-button {
+        white-space: nowrap;
+    }
+
+    .section-main .offer .offer-title[data-v-869f8f0a] {
+        font-size: 28px;
+        line-height: 1.2;
+    }
+
+    .section-main .offer .offer-subtitle[data-v-869f8f0a] {
+        font-size: 16px;
+    }
+
+    .section-main .offer .stats[data-v-869f8f0a] {
+        gap: .65rem;
+        font-size: 14px;
+    }
+
+    .section-main .offer .stats p[data-v-869f8f0a] {
+        font-size: 14px;
+    }
+
+    /* Укоротить текст первой метрики до "вакансий" и скрыть исходный */
+    .section-main .offer .stats p[data-v-869f8f0a]:first-of-type span:nth-child(2) {
+        display: none;
+    }
+
+    .section-main .offer .stats p[data-v-869f8f0a]:first-of-type::after {
+        content: " вакансий";
+        font-size: 14px;
+    }
+
+    /* Укороченный текст первой метрики на телефонах */
+    .section-main .offer .stats p[data-v-869f8f0a]:first-of-type span:nth-child(2) {
+        font-size: 0;
+        position: relative;
+    }
+
+    .section-main .offer .stats p[data-v-869f8f0a]:first-of-type span:nth-child(2)::after {
+        content: " вакансий";
+        font-size: 14px;
+    }
+
+    .ra-jobs-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .middle .section-projects .scroll-container[data-v-869f8f0a] {
+        max-width: 100%;
+        padding: 0 8px;
+    }
+
+    .middle .section-projects .comments[data-v-869f8f0a] {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+@media (max-width: 540px) {
+    .header {
+        top: 8px;
+        width: calc(100% - 16px);
+        padding: 9px 10px;
+    }
+
+    .section-main[data-v-869f8f0a] {
+        padding-top: 25px;
+        gap: 48px;
+    }
+
+    .middle[data-v-869f8f0a] {
+        padding-top: 60px;
+        padding-bottom: 70px;
+        gap: 56px;
+    }
+
+    .middle .section-projects .comments[data-v-869f8f0a] {
+        column-count: 1;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .ra-card-jobs {
+        padding: 16px;
+    }
 }

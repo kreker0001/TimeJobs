@@ -7,12 +7,21 @@ from flask_login import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import UniqueConstraint, inspect, text
 from sqlalchemy.exc import OperationalError
+from urllib.parse import urlparse, urljoin
 import os, datetime, time
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+
+def _load_secret_key():
+    env_key = os.environ.get('SECRET_KEY') or os.environ.get('FLASK_SECRET_KEY')
+    if env_key:
+        return env_key
+    return os.urandom(32)
+
+
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'change-this-secret-key'
+app.config['SECRET_KEY'] = _load_secret_key()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'time_jobs.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -534,7 +543,7 @@ def manage():
                     break
 
     return render_template(
-        'manage.html',
+        'cabinet/manage.html',
         jobs=jobs,
         status_groups=status_groups if current_user.role == 'employer' else None,
         status_tabs=status_tabs if current_user.role == 'employer' else None,
@@ -741,7 +750,7 @@ def my_applications():
                 meta['last'] = msg
 
     return render_template(
-        'my_applications.html',
+        'vacancies/my_applications.html',
         applications=filtered,
         filter_options=filter_options,
         active_filter=filter_key,
@@ -828,7 +837,7 @@ def worker_cabinet():
     years = list(range(datetime.date.today().year, 1939, -1))
 
     return render_template(
-        'worker_cabinet.html',
+        'cabinet/worker_cabinet.html',
         resumes_count=resumes_count,
         applied_count=applied_count,
         accepted_count=accepted_count,
@@ -1174,7 +1183,7 @@ def view_job_applications(job_id):
                 meta['last'] = msg
 
     return render_template(
-        'applications_for_job.html',
+        'vacancies/applications_for_job.html',
         job=job,
         apps=apps,
         search=search,

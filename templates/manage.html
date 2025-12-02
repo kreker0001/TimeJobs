@@ -48,9 +48,6 @@
                        placeholder="Поиск по названию, городу или специализации"
                        class="profile-input">
             </div>
-            <div class="employer-toolbar__actions">
-                <a href="{{ url_for('post_job') }}" class="ra-button preset primary">Новая вакансия</a>
-            </div>
         </form>
 
         {% if status_tabs %}
@@ -62,6 +59,9 @@
                 <span class="employer-tab__counter">{{ tab.count }}</span>
             </a>
             {% endfor %}
+			<div class="employer-toolbar__actions">
+						<a href="{{ url_for('post_job') }}" class="resume-btn resume-btn--primary" style="margin-left: 256px">Новая вакансия</a>
+				</div>
         </div>
         {% endif %}
 

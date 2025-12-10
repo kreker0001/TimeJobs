@@ -123,6 +123,7 @@ class Job(db.Model):
     status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     view_count = db.Column(db.Integer, default=0)
+    work_format = db.Column(db.String(50))
     experience_level = db.Column(db.String(50))
     employment_type = db.Column(db.String(50))
     tariff = db.Column(db.String(50))
@@ -394,7 +395,14 @@ def vacancy_detail(job_id):
         job.view_count = (job.view_count or 0) + 1
         viewed[str(job.id)] = today
         session['viewed_jobs'] = viewed
-        db.session.commit()
+        try:
+            db.session.commit()
+        except OperationalError:
+            # If the database is temporarily locked (for example right after a
+            # schema self-upgrade), skip updating the counter instead of
+            # crashing the vacancy page. The change will be retried on the next
+            # view.
+            db.session.rollback()
     return render_template('vacancies/detail.html', job=job)
 
 
@@ -1406,6 +1414,8 @@ def ensure_job_columns():
     ddl = []
     if 'view_count' not in cols:
         ddl.append("ALTER TABLE job ADD COLUMN view_count INTEGER DEFAULT 0")
+    if 'work_format' not in cols:
+        ddl.append("ALTER TABLE job ADD COLUMN work_format VARCHAR(50)")
     if 'experience_level' not in cols:
         ddl.append("ALTER TABLE job ADD COLUMN experience_level VARCHAR(50)")
     if 'employment_type' not in cols:

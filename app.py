@@ -395,7 +395,14 @@ def vacancy_detail(job_id):
         job.view_count = (job.view_count or 0) + 1
         viewed[str(job.id)] = today
         session['viewed_jobs'] = viewed
-        db.session.commit()
+        try:
+            db.session.commit()
+        except OperationalError:
+            # If the database is temporarily locked (for example right after a
+            # schema self-upgrade), skip updating the counter instead of
+            # crashing the vacancy page. The change will be retried on the next
+            # view.
+            db.session.rollback()
     return render_template('vacancies/detail.html', job=job)
 
 
